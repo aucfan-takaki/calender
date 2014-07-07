@@ -56,7 +56,100 @@ echo "$start_day";
 */
 for ($i = 1; $i <= $last_day; $i++){
 	var_dump($i);
+
+	//土曜日の日付を表示したら改行する
+	$saturday = (date(w) - date(j) +$i +35 ) % 7;
+	if($saturday == 6){
+		echo("\n");
+	}
 }
+
+?>
+
+<!-- tableの設定 -->
+<style>
+table {
+	border-collapse: collapse;
+}
+td {
+	border: solid 1px;
+	padding: 0.5em;
+}
+</style>
+
+<!-- カレンダーのテーブル -->
+<table>
+	<tr>2014年7月</tr>
+	<tr>
+		<td>日</td>
+		<td>月</td>
+		<td>火</td>
+		<td>水</td>
+		<td>木</td>
+		<td>金</td>
+		<td>土</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+		<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+
+
+
+
+<?php
+
 exit;
 
 //nヶ月後の設定
