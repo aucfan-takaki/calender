@@ -1,39 +1,4 @@
 <?php
-/*
-
-echo date("今日の日付：n月j日\n");
-
-echo date("今日の曜日：");
-if(date(w)==0) {
-echo("日曜");
-}
-if(date(w)==1){
-echo("月曜");
-}
-if(date(w)==2){
-echo("火曜");
-}
-if(date(w)==3){
-echo("水曜");
-}
-if(date(w)==4){
-echo("木曜");
-}
-if(date(w)==5){
-echo("金曜");
-}
-if(date(w)==6){
-echo("土曜");
-}
-
-*/
-
-//string date (string $format [, int $timestamp = time()]);
-
-
-//キーワード
-//Y/m/d
-
 //今月のカレンダー作成		
 
 $this_year  = date(Y);
@@ -84,7 +49,7 @@ td {
 
 <!-- カレンダーのテーブル -->
 <table>
-<tr><?php echo("$this_year".'年'."$this_month".'月') ?></tr>
+<tr><?php echo "$this_year" . '年' . "$this_month" . '月' ?></tr>
 	<tr>
 		<td>日</td>
 		<td>月</td>
@@ -99,12 +64,14 @@ td {
 	<tr>
 		<?php for(; $count_day <= $last_day + $start_day; $count_day++) : ?>
 			<!-- 1〜月の日数を表示 -->
-			<td> <?php if($count_day > 0 && $count_day <= $last_day){echo $count_day;} ?></td>
+			<td> <?php if($count_day > 0 && $count_day <= $last_day) {
+				echo $count_day; 
+			} ?></td>
 			<!-- 土曜だったらループを抜ける -->
-			<?php if(($count_day +$start_day)% 7==0){
+			<?php if(($count_day + $start_day) % 7 == 0) {
 				$count_day++;
 				break;
-				}?>
+			} ?>
 		<?php endfor ?>
 	</tr>
 	<?php endfor ?>
