@@ -42,18 +42,20 @@ $this_day   = date(d);
 
 echo "$this_year".'/'."$this_month".'/'."$this_day";
 
-echo $this_year;
-
+//今月の日数
 $last_day = date(t);
 
 //今月の1日の曜日を計算(0~6:日~土)
 $start_day = (date(w) - date(j) +8 ) % 7;
-echo "$start_day";
+
+//カレンダーの1マス目の日数
+$count_day = 1 - $start_day;
 
 /*
 $start_day = date('w', mktime(0, 0, 0, $month, 1, $year));
 echo "$start_day";
 */
+
 for ($i = 1; $i <= $last_day; $i++){
 	var_dump($i);
 
@@ -79,7 +81,7 @@ td {
 
 <!-- カレンダーのテーブル -->
 <table>
-	<tr>2014年7月</tr>
+<tr><?php echo("$this_year".'年'."$this_month".'月') ?></tr>
 	<tr>
 		<td>日</td>
 		<td>月</td>
@@ -89,63 +91,13 @@ td {
 		<td>金</td>
 		<td>土</td>
 	</tr>
+	<?php //for(;;) ?>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-	</tr>
-		<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
+		<?php for(; $count_day <= $last_day; $count_day++) : ?>
+			<td> <?php if($count_day > 0){echo $count_day;} ?> </td>
+		<?php endfor ?>
 	</tr>
 </table>
-
-
 
 
 <?php
