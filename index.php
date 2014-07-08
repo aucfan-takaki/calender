@@ -1,97 +1,79 @@
 <?php
 
-//今月のカレンダー作成		
+//nヶ月後を表記
+$n = 0;
+//1ヶ月前、該当月、1か月後のカレンダー3つを作成
+for ($target_number=$n -1; $target_number <= $n+1; $target_number++) :
+//今月から何ヶ月ずれているか
+$target_month = strtotime("+$target_number month");
 
-$this_year  = date(Y);
-$this_month = date(m);
-$this_day   = date(d);
+//カレンダー作成
 
-echo "$this_year".'/'."$this_month".'/'."$this_day";
+$this_year  = date(Y,$target_month);
+$this_month = date(m,$target_month);
+$this_day   = date(d,$target_month);
 
-//今月の日数
-$last_day = date(t);
+//今月から($target_month)ヶ月後の日数
+$last_day = date(t,$target_month);
+echo "日数：$last_day ";
 
-//今月の1日の曜日を計算(0~6:日~土)
-$start_day = (date(w) - date(j) +8 ) % 7;
+//今月から($target_month)ヶ月後の1日の曜日を計算(0~6:日~土)
+$start_day = (date(w,$target_month) - date(j,$target_month) +8 ) % 7;
+echo "1日の曜日：$start_day";
 
 //カレンダーの1マス目の日数
 $count_day = 1 - $start_day;
 
 //カレンダーの週数
-$count_week = ceil(($last_day + $count_day)/7);	
-
-
-for ($i = 1; $i <= $last_day; $i++){
-	var_dump($i);
-
-	//土曜日の日付を表示したら改行する
-	$saturday = (date(w) - date(j) +$i +35 ) % 7;
-	if($saturday == 6){
-		echo("\n");
-	}
-}
+$count_week = ceil(($last_day + $start_day)/7);
 
 ?>
-
-<!-- tableの設定 -->
-<style>
-table {
-	border-collapse: collapse;
-}
-td {
-	border: solid 1px;
-	padding: 0.5em;
-}
-</style>
-
-<!-- カレンダーのテーブル -->
-<table>
-<tr><?php echo "$this_year" . '年' . "$this_month" . '月' ?></tr>
-	<tr>
-		<td>日</td>
-		<td>月</td>
-		<td>火</td>
-		<td>水</td>
-		<td>木</td>
-		<td>金</td>
-		<td>土</td>
-	</tr>
-	<!-- 週の数だけ繰り返す -->
-	<?php for($i=0; $i < $count_week; $i++) : ?>
-	<tr>
-		<?php for(; $count_day <= $last_day + $start_day; $count_day++) : ?>
-			<!-- 1〜月の日数を表示 -->
-			<td> <?php if($count_day > 0 && $count_day <= $last_day) {
- +				echo $count_day; 
- +			} ?></td>
-			<!-- 土曜だったらループを抜ける -->
-			<?php if(($count_day + $start_day) % 7 == 0) {
-				$count_day++;
-				break;
-			} ?>
+<!DOCTYPE html>
+<html>
+<head>
+	<?php //tableの設定 ?>
+	<style>
+	table {
+		border-collapse: collapse;
+	}
+	td {
+		border: solid 1px;
+		padding: 0.5em;
+	}
+	</style>
+	<title></title>
+</head>
+<body>
+	<table>
+	<tr><?php echo "$this_year" . '年' . "$this_month" . '月' ?></tr>
+		<tr>
+			<td>日</td>
+			<td>月</td>
+			<td>火</td>
+			<td>水</td>
+			<td>木</td>
+			<td>金</td>
+			<td>土</td>
+		</tr>
+		<?php
+		// 週の数だけ繰り返す
+		for($i=0; $i < $count_week; $i++) : ?>
+		<tr>
+			<?php for($j = 0 ; $j < 7 ; $j++ ) : ?>
+				<td> <?php //1〜月の日数を表示
+				if($count_day > 0 && $count_day <= $last_day) {
+	 				echo $count_day; 
+	 			} ?></td>
+				<?php //土曜だったらループを抜ける
+				if(($count_day + $start_day) % 7 == 0) {
+					$count_day++;
+					break;
+				} ?>
+			<?php $count_day++;
+			endfor ?>
+		</tr>
 		<?php endfor ?>
-	</tr>
+	</table>
 	<?php endfor ?>
-</table>
-
-
-<?php
-
-exit;
-
-//nヶ月後の設定
-$n = 1 ;
-
-//nヶ月後の日付
-//var_dump($target_time);
-$target_time = date('Y/m/d',strtotime("+$n month"));
-var_dump($target_time);
-
-//nヶ月後の日数
-$last_day = date(t,strtotime("+$n month"));
-var_dump($last_day);
-
-//nヶ月後の1日の曜日
-$first_day = (date(w,strtotime("+$n month")) - date(j,strtotime("+$n month"))+8)% 7;
-var_dump($first_day);
-
+</body>
+</html>
