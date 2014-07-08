@@ -94,11 +94,12 @@ td {
 		<td>金</td>
 		<td>土</td>
 	</tr>
+	<!-- 週の数だけ繰り返す -->
 	<?php for($i=0; $i < $count_week; $i++) : ?>
 	<tr>
-		<?php for(; $count_day <= $last_day; $count_day++) : ?>
-			<!--  -->
-			<td> <?php if($count_day > 0){echo $count_day;} ?></td>
+		<?php for(; $count_day <= $last_day + $start_day; $count_day++) : ?>
+			<!-- 1〜月の日数を表示 -->
+			<td> <?php if($count_day > 0 && $count_day <= $last_day){echo $count_day;} ?></td>
 			<!-- 土曜だったらループを抜ける -->
 			<?php if(($count_day +$start_day)% 7==0){
 				$count_day++;
