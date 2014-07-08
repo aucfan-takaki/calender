@@ -51,6 +51,9 @@ $start_day = (date(w) - date(j) +8 ) % 7;
 //カレンダーの1マス目の日数
 $count_day = 1 - $start_day;
 
+//カレンダーの週数
+$count_week = ceil(($last_day + $count_day)/7);	
+
 /*
 $start_day = date('w', mktime(0, 0, 0, $month, 1, $year));
 echo "$start_day";
@@ -91,12 +94,19 @@ td {
 		<td>金</td>
 		<td>土</td>
 	</tr>
-	<?php //for(;;) ?>
+	<?php for($i=0; $i < $count_week; $i++) : ?>
 	<tr>
 		<?php for(; $count_day <= $last_day; $count_day++) : ?>
-			<td> <?php if($count_day > 0){echo $count_day;} ?> </td>
+			<!--  -->
+			<td> <?php if($count_day > 0){echo $count_day;} ?></td>
+			<!-- 土曜だったらループを抜ける -->
+			<?php if(($count_day +$start_day)% 7==0){
+				$count_day++;
+				break;
+				}?>
 		<?php endfor ?>
 	</tr>
+	<?php endfor ?>
 </table>
 
 
