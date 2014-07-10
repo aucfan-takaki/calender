@@ -1,18 +1,19 @@
 <?php
+
 //年月を取得、nullの場合は今月の値
 $this_year = $_GET["year"];
-if($this_year == null) $this_year  = date(Y);
 $this_month= $_GET["month"];
-if($this_month == null) $this_month = date(n);
+if (empty($this_year)) $this_year  = date(Y);
+if (empty($this_month)) $this_month = date(n);
 
 $target_month = mktime(0,0,0,$this_month,1,$this_year);
 
 //今月から($target_month)ヶ月後の日数
-$last_day = date(t,$target_month);
+$last_day = date(t, $target_month);
 echo "日数：$last_day ";
 
 //今月から($target_month)ヶ月後の1日の曜日を計算(0~6:日~土)
-$start_day = (date(w,$target_month) - date(j,$target_month) +15 ) % 7;
+$start_day = date(w,$target_month);
 echo "1日の曜日：$start_day";
 
 
@@ -66,6 +67,26 @@ $count_week = ceil(($last_day + $start_day)/7);
 	<title></title>
 </head>
 <body>
+
+<form method="GET" action="index.php">
+	<select name="year">
+	<?php for ($k = $this_year - 1; $k < $this_year + 2; $k++) : ?>
+		<option value=<?php echo "$k"?>><?php echo "$k"?></option>
+	<?php endfor ?>
+	</select>
+	<input type="submit" name="submit" value="反映する">
+</form>
+
+<form method="GET" action="index.php">
+	<select name="month">
+	<?php for ($k = 1; $k <= 12; $k++) : ?>
+		<option value=<?php echo "$k"?>><?php echo "$k"?></option>
+	<?php endfor ?>
+	</select>
+	<input type="submit" name="submit" value="反映する">
+</form>
+
+
 	<table>
 	<tr><?php echo "$this_year" . '年' . "$this_month" . '月' ?></tr>
 		<tr>
