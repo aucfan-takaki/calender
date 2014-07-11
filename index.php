@@ -6,43 +6,29 @@ $this_month= $_GET["month"];
 if (empty($this_year)) $this_year  = date(Y);
 if (empty($this_month)) $this_month = date(n);
 
-$target_month = mktime(0,0,0,$this_month,1,$this_year);
 
-//今月から($target_month)ヶ月後の日数
-$last_day = date(t, $target_month);
+$target_time = mktime(0,0,0,$this_month,1,$this_year);
+//$target_time = strtotime(20141201); // 2014/7/01 -> UNIXTIME
+$next_time = strtotime('next month', $target_time);
+$next_year = date("Y",$next_time);
+$next_month = date("n",$next_time);
+
+$last_time = strtotime('last month', $target_time);
+$last_year = date("Y",$last_time);
+$last_month = date("n",$last_time);
+
+//配列
+//$arr = array($last_month, $this_month, $next_month);
+//echo "$arr[0]$arr[1]$arr[2]";
+
+
+//今月から($target_time)ヶ月後の日数
+$last_day = date(t, $target_time);
 echo "日数：$last_day ";
 
-//今月から($target_month)ヶ月後の1日の曜日を計算(0~6:日~土)
-$start_day = date(w,$target_month);
+//今月から($target_time)ヶ月後の1日の曜日を計算(0~6:日~土)
+$start_day = date(w,$target_time);
 echo "1日の曜日：$start_day";
-
-
-/*
-今月を中心に3ヶ月表記ver（先月、今月、来月）
-nの値を変更することによってカレンダーの月をnヶ月ずらせる
-
-//nヶ月後を表記
-$n = 0;
-//1ヶ月前、該当月、1か月後のカレンダー3つを作成
-for ($target_number = $n -1; $target_number <= $n+1; $target_number++) :
-//今月から何ヶ月ずれているか
-$target_month = strtotime("+$target_number month");
-
-
-//カレンダー作成
-
-$this_year  = date(Y,$target_month);
-$this_month = date(n,$target_month);
-
-//今月から($target_month)ヶ月後の日数
-$last_day = date(t,$target_month);
-echo "日数：$last_day ";
-
-//今月から($target_month)ヶ月後の1日の曜日を計算(0~6:日~土)
-$start_day = (date(w,$target_month) - date(j,$target_month) +15 ) % 7;
-echo "1日の曜日：$start_day";
-
-*/
 
 //カレンダーの1マス目の日数
 $count_day = 1 - $start_day;
@@ -54,7 +40,6 @@ $count_week = ceil(($last_day + $start_day)/7);
 <!DOCTYPE html>
 <html>
 <head>
-	<?php //tableの設定 ?>
 	<style>
 	table {
 		border-collapse: collapse;
@@ -71,22 +56,43 @@ $count_week = ceil(($last_day + $start_day)/7);
 <form method="GET" action="index.php">
 	<select name="year">
 	<?php for ($k = $this_year - 1; $k < $this_year + 2; $k++) : ?>
-		<option value=<?php echo "$k"?>><?php echo "$k"?></option>
+		<option value=<?php echo $k;
+		if ($k == $this_year) {
+			echo " selected";
+		} ?>><?php echo $k ?></option>
 	<?php endfor ?>
 	</select>
-	<input type="submit" name="submit" value="反映する">
+		<select name="month">
+	<?php for ($k = 1; $k <= 12; $k++) : ?>
+		<option value=<?php echo $k;
+		if ($k == $this_month) {
+			echo " selected";
+		} ?>><?php echo $k ?>
+		</option>
+	<?php endfor ?>
+	</select>
+	<input type="submit" value="反映する">
 </form>
+
 
 <form method="GET" action="index.php">
-	<select name="month">
-	<?php for ($k = 1; $k <= 12; $k++) : ?>
-		<option value=<?php echo "$k"?>><?php echo "$k"?></option>
-	<?php endfor ?>
-	</select>
-	<input type="submit" name="submit" value="反映する">
+	<input type="hidden" value=<?php echo $last_year ?> name="year">
+	<input type="hidden" value=<?php echo $last_month ?> name="month">
+	<input type="submit" value="＜＜">
+</form>
+<form method="GET" action="index.php">
+	<input type="hidden" value=<?php echo date("Y") ?> name="year">
+	<input type="hidden" value=<?php echo date("n") ?> name="month">
+	<input type="submit" value="今月">
+</form>
+<form method="GET" action="index.php">
+	<input type="hidden" value=<?php echo $next_year ?> name="year">
+	<input type="hidden" value=<?php echo $next_month ?> name="month">
+	<input type="submit" value="＞＞">
 </form>
 
 
+<?php //foreach ($arr as $value) :?>
 	<table>
 	<tr><?php echo "$this_year" . '年' . "$this_month" . '月' ?></tr>
 		<tr>
@@ -132,6 +138,6 @@ $count_week = ceil(($last_day + $start_day)/7);
 		</tr>
 		<?php endfor ?>
 	</table>
-	<?php /*endfor (←3ヶ月ループ用)*/ ?>
+<?php //endforeach ?>
 </body>
 </html>
