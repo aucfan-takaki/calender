@@ -9,6 +9,7 @@ if (empty($this_month)) $this_month = date(n);
 $target_time = mktime(0,0,0,$this_month,1,$this_year);
 //$target_time = strtotime(20141201); // 2014/7/01 -> UNIXTIME
 
+
 //来月へ遷移ボタン用
 $next_time = strtotime('next month', $target_time);
 $next_year = date("Y",$next_time);
@@ -18,49 +19,54 @@ $last_time = strtotime('last month', $target_time);
 $last_year = date("Y",$last_time);
 $last_month = date("n",$last_time);
 
-$year_months = array(
-	0 => array(
-		'time' => $last_time,
-		'year' => $last_year,
-		'month' => $last_month,
-	),
-	1 => array(
-		'time' => $target_time,
-		'year' => $this_year,
-		'month' => $this_month,
-	),
-	2 => array(
-		'time' => $next_time,
-		'year' => $next_year,
-		'month' => $next_month,
-	)
-);
+function jumptime($count) {
+	global $target_time;
+	return strtotime($count . ' month', $target_time);
+}
+function jumpyear($count) {
+	return date("Y", jumptime($count));
+}
+function jumpmonth($count) {
+	return date("n", jumptime($count));
+}
+
+$test = date('Y', jumptime(18));
+echo $test;
+
+//前後nヶ月表示		
+$show_month = 1;
+$year_months = array();
+for ($i = -$show_month; $i <= $show_month; $i++) { 
+	$year_months[$i] = array(
+	'time' => jumptime($i),
+	'year' => jumpyear($i),
+	'month' => jumpmonth($i),
+	);
+}
 
 
 //今月から($target_time)ヶ月後の日数
 //$last_day = date(t, $target_time);
-function lastday($target){
+function lastday($target) {
 	return date(t, $target);
 }
 
 //今月から($target_time)ヶ月後の1日の曜日を計算(0~6:日~土)
 //$start_day = date(w,$target_time);
-function startday($target){
+function startday($target) {
 	return date(w,$target);
 }
 
 //カレンダーの1マス目の日数
 //$count_day = 1 - $start_day;
-function countday($target){
-	$re = 1 - startday($target);
-	return $re;
+function countday($target) {
+	return 1 - startday($target);
 }
 
 //カレンダーの週数
 //$count_week = ceil(($last_day + $start_day)/7);
-function countweek($target){
-	$re = ceil((lastday($target) + startday($target)) / 7);
-	return $re;
+function countweek($target) {
+	return ceil((lastday($target) + startday($target)) / 7);
 }
 ?>
 
