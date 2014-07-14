@@ -29,14 +29,17 @@ function jumpyear($count) {
 function jumpmonth($count) {
 	return date("n", jumptime($count));
 }
+	
+$show_month = 4;
+$pmonth = -floor($show_month/2);
+if ($show_month % 2 == 1) {
+	$nmonth = 	floor($show_month/2);
+} else{
+	$nmonth = floor($show_month/2) -1;
+}
 
-$test = date('Y', jumptime(18));
-echo $test;
-
-//前後nヶ月表示		
-$show_month = 1;
 $year_months = array();
-for ($i = -$show_month; $i <= $show_month; $i++) { 
+for ($i = $pmonth; $i <= $nmonth; $i++) { 
 	$year_months[$i] = array(
 	'time' => jumptime($i),
 	'year' => jumpyear($i),
