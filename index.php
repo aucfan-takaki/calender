@@ -6,37 +6,64 @@ $this_month= $_GET["month"];
 if (empty($this_year)) $this_year  = date(Y);
 if (empty($this_month)) $this_month = date(n);
 
-
 $target_time = mktime(0,0,0,$this_month,1,$this_year);
 //$target_time = strtotime(20141201); // 2014/7/01 -> UNIXTIME
+
+//来月へ遷移ボタン用
 $next_time = strtotime('next month', $target_time);
 $next_year = date("Y",$next_time);
 $next_month = date("n",$next_time);
-
+//先月へ遷移ボタン用
 $last_time = strtotime('last month', $target_time);
 $last_year = date("Y",$last_time);
 $last_month = date("n",$last_time);
 
-//配列
-//$arr = array($last_month, $this_month, $next_month);
-//echo "$arr[0]$arr[1]$arr[2]";
+$year_months = array(
+	0 => array(
+		'time' => $last_time,
+		'year' => $last_year,
+		'month' => $last_month,
+	),
+	1 => array(
+		'time' => $target_time,
+		'year' => $this_year,
+		'month' => $this_month,
+	),
+	2 => array(
+		'time' => $next_time,
+		'year' => $next_year,
+		'month' => $next_month,
+	)
+);
 
 
 //今月から($target_time)ヶ月後の日数
-$last_day = date(t, $target_time);
-echo "日数：$last_day ";
+//$last_day = date(t, $target_time);
+function lastday($target){
+	return date(t, $target);
+}
 
 //今月から($target_time)ヶ月後の1日の曜日を計算(0~6:日~土)
-$start_day = date(w,$target_time);
-echo "1日の曜日：$start_day";
+//$start_day = date(w,$target_time);
+function startday($target){
+	return date(w,$target);
+}
 
 //カレンダーの1マス目の日数
-$count_day = 1 - $start_day;
+//$count_day = 1 - $start_day;
+function countday($target){
+	$re = 1 - startday($target);
+	return $re;
+}
 
 //カレンダーの週数
-$count_week = ceil(($last_day + $start_day)/7);
-
+//$count_week = ceil(($last_day + $start_day)/7);
+function countweek($target){
+	$re = ceil((lastday($target) + startday($target)) / 7);
+	return $re;
+}
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -55,7 +82,7 @@ $count_week = ceil(($last_day + $start_day)/7);
 
 <form method="GET" action="index.php">
 	<select name="year">
-	<?php for ($k = $this_year - 1; $k < $this_year + 2; $k++) : ?>
+	<?php for ($k = $this_year - 5; $k < $this_year + 6; $k++) : ?>
 		<option value=<?php echo $k;
 		if ($k == $this_year) {
 			echo " selected";
@@ -92,9 +119,9 @@ $count_week = ceil(($last_day + $start_day)/7);
 </form>
 
 
-<?php //foreach ($arr as $value) :?>
+<?php foreach ($year_months as $key => $value) :?>
 	<table>
-	<tr><?php echo "$this_year" . '年' . "$this_month" . '月' ?></tr>
+	<tr><?php echo $value['year'] . '年' . $value['month'] . '月' ?></tr>
 		<tr>
 			<td style="background:#ffcccc" >日</td>
 			<td>月</td>
@@ -106,12 +133,12 @@ $count_week = ceil(($last_day + $start_day)/7);
 		</tr>
 		<?php
 		// 週の数だけ繰り返す
-		for($i=0; $i < $count_week; $i++) : ?>
+		for($i = 0, $c = countday($value['time']); $i < countweek($value['time']); $i++) : ?>
 		<tr>
 			<?php for($j = 0 ; $j < 7 ; $j++ ) : ?>
 				<td <?php
 				//本日の日付のセルを黄色に
-				if ($this_year == date(Y) && $this_month == date(n) && $count_day == date(j) ) : ?>
+				if ($value['year'] == date(Y) && $value['month'] == date(n) && $c == date(j) ) : ?>
 					style="background:#ffffaa"
 				<?php endif ?>
 				<?php
@@ -125,19 +152,19 @@ $count_week = ceil(($last_day + $start_day)/7);
 					style="background:#aaccff"
 				<?php endif ?>
 				> <?php //1〜月の日数を表示
-				if($count_day > 0 && $count_day <= $last_day) {
-	 				echo $count_day; 
+				if($c > 0 && $c <= lastday($value['time'])) {
+	 				echo $c; 
 	 			} ?></td>
 				<?php //土曜だったらループを抜ける
-				if(($count_day + $start_day) % 7 == 0) {
-					$count_day++;
+				if(($c + startday($value['time'])) % 7 == 0) {
+					$c++;
 					break;
 				} ?>
-			<?php $count_day++;
+			<?php $c++;
 			endfor ?>
 		</tr>
 		<?php endfor ?>
 	</table>
-<?php //endforeach ?>
+<?php endforeach ?>
 </body>
 </html>
