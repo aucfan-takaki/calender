@@ -18,8 +18,9 @@ function jumpyear($count) {
 function jumpmonth($count) {
 	return date("n", jumptime($count));
 }
-	
-$show_month = 4;
+
+$show_month= $_GET["show"];
+if (empty($show_month)) $show_month  = 3;
 $pmonth = -floor($show_month/2);
 if ($show_month % 2 == 1) {
 	$nmonth = 	floor($show_month/2);
@@ -50,16 +51,20 @@ function startday($target) {
 	return date(w,$target);
 }
 
+$start_days_of_the_week= $_GET["startweek"];
+if (empty($start_days_of_the_week)) $start_days_of_the_week  = 0;
+
 //カレンダーの1マス目の日数
 //$count_day = 1 - $start_day;
 function countday($target) {
-	return 1 - startday($target);
+	global $start_days_of_the_week;
+	return 1 - (startday($target) - $start_days_of_the_week + 7) % 7;
 }
 
 //カレンダーの週数
 //$count_week = ceil(($last_day + $start_day)/7);
 function countweek($target) {
-	return ceil((lastday($target) + startday($target)) / 7);
+	return ceil((lastday($target) - countday($target) + 1 ) / 7);
 }
 
 function addcolor($time, $year, $month, $day){
@@ -75,6 +80,28 @@ function addcolor($time, $year, $month, $day){
 	}
 }
 
+$daysname = array(
+	(7 - $start_days_of_the_week) % 7 => '日', 
+	(8 - $start_days_of_the_week) % 7 => '月',
+	(9 - $start_days_of_the_week) % 7 => '火',
+	(10 - $start_days_of_the_week) % 7 => '水',
+	(11 - $start_days_of_the_week) % 7 => '木',
+	(12 - $start_days_of_the_week) % 7 => '金',
+	(13 - $start_days_of_the_week) % 7 => '土',
+	);
+
+echo $daysname[0];
+
+function startcolor($day){
+	global $start_days_of_the_week;
+	$judge = ($day + $start_days_of_the_week) % 7;
+	if ($judge == 0) {
+		return "sunday ";
+	}
+	if ($judge == 6) {
+		return "saturday ";
+	}
+}
 
 ?>
 
@@ -105,15 +132,34 @@ function addcolor($time, $year, $month, $day){
 		<option value=<?php echo $k;
 		if ($k == $this_year) {
 			echo " selected";
-		} ?>><?php echo $k ?></option>
+		} ?>><?php echo $k.'年' ?></option>
 	<?php endfor ?>
 	</select>
-		<select name="month">
+	<select name="month">
 	<?php for ($k = 1; $k <= 12; $k++) : ?>
 		<option value=<?php echo $k;
 		if ($k == $this_month) {
 			echo " selected";
-		} ?>><?php echo $k ?>
+		} ?>><?php echo $k.'月' ?>
+		</option>
+	<?php endfor ?>
+	</select>
+	<select name="show">
+	<?php for ($k = 1; $k <= 12; $k++) : ?>
+		<option value=<?php echo $k;
+		if ($k == $show_month) {
+			echo " selected";
+		} ?>><?php echo $k.'月分表示' ?>
+		</option>
+	<?php endfor ?>
+	</select>
+	<select name="startweek">
+	<?php for ($k = 0; $k < 7; $k++) : ?>
+		<option value=<?php echo $k;
+		if ($k == $start_days_of_the_week) {
+			echo " selected";
+		} ?>>
+		<?php echo $daysname[($k - $start_days_of_the_week +7) %7].'曜日から表示' ?>
 		</option>
 	<?php endfor ?>
 	</select>
@@ -124,17 +170,17 @@ function addcolor($time, $year, $month, $day){
 <form method="GET" action="index.php">
 	<input type="hidden" value=<?php echo jumpyear(-1) ?> name="year">
 	<input type="hidden" value=<?php echo jumpmonth(-1) ?> name="month">
-	<input type="submit" value="＜＜">
+	<input type="submit" value="＜＜" style="margin:3px; float:left;">
 </form>
 <form method="GET" action="index.php">
 	<input type="hidden" value=<?php echo date("Y") ?> name="year">
 	<input type="hidden" value=<?php echo date("n") ?> name="month">
-	<input type="submit" value="今月">
+	<input type="submit" value="今月" style="margin:3px; float:left;">
 </form>
 <form method="GET" action="index.php">
 	<input type="hidden" value=<?php echo jumpyear(1) ?> name="year">
 	<input type="hidden" value=<?php echo jumpmonth(1) ?> name="month">
-	<input type="submit" value="＞＞">
+	<input type="submit" value="＞＞" style="margin:3px">
 </form>
 
 
@@ -142,13 +188,11 @@ function addcolor($time, $year, $month, $day){
 	<table>
 	<tr><?php echo $value['year'] . '年' . $value['month'] . '月' ?></tr>
 		<tr>
-			<td style="background:pink" >日</td>
-			<td>月</td>
-			<td>火</td>
-			<td>水</td>
-			<td>木</td>
-			<td>金</td>
-			<td style="background:lightblue" >土</td>
+			<?php for ($i=0; $i <7 ; $i++) : ?>
+						<td class="<?php
+			echo startcolor($i);
+			?>" ><?php echo $daysname["$i"] ?></td>
+			<?php endfor ?>
 		</tr>
 		<?php
 		// 週の数だけ繰り返す
