@@ -7,17 +7,6 @@ if (empty($this_year)) $this_year  = date(Y);
 if (empty($this_month)) $this_month = date(n);
 
 $target_time = mktime(0,0,0,$this_month,1,$this_year);
-//$target_time = strtotime(20141201); // 2014/7/01 -> UNIXTIME
-
-
-//来月へ遷移ボタン用
-$next_time = strtotime('next month', $target_time);
-$next_year = date("Y",$next_time);
-$next_month = date("n",$next_time);
-//先月へ遷移ボタン用
-$last_time = strtotime('last month', $target_time);
-$last_year = date("Y",$last_time);
-$last_month = date("n",$last_time);
 
 function jumptime($count) {
 	global $target_time;
@@ -48,6 +37,7 @@ for ($i = $pmonth; $i <= $nmonth; $i++) {
 }
 
 
+
 //今月から($target_time)ヶ月後の日数
 //$last_day = date(t, $target_time);
 function lastday($target) {
@@ -71,6 +61,21 @@ function countday($target) {
 function countweek($target) {
 	return ceil((lastday($target) + startday($target)) / 7);
 }
+
+function addcolor($time, $year, $month, $day){
+	$this_day = strtotime($day-1 . ' day', $time);
+	if (date("Y/m/d",$this_day) == date("Y/m/d")) {
+		return "today ";
+	}
+	if (date(w,$this_day) == 0) {
+		return "sunday ";
+	}
+	if (date(w,$this_day) == 6) {
+		return "saturday ";
+	}
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -84,6 +89,11 @@ function countweek($target) {
 		border: solid 1px;
 		padding: 0.5em;
 	}
+
+	.today{background-color: yellow;}
+	.sunday{background-color: pink;}
+	.saturday{background-color: lightblue;}
+
 	</style>
 	<title></title>
 </head>
@@ -112,8 +122,8 @@ function countweek($target) {
 
 
 <form method="GET" action="index.php">
-	<input type="hidden" value=<?php echo $last_year ?> name="year">
-	<input type="hidden" value=<?php echo $last_month ?> name="month">
+	<input type="hidden" value=<?php echo jumpyear(-1) ?> name="year">
+	<input type="hidden" value=<?php echo jumpmonth(-1) ?> name="month">
 	<input type="submit" value="＜＜">
 </form>
 <form method="GET" action="index.php">
@@ -122,8 +132,8 @@ function countweek($target) {
 	<input type="submit" value="今月">
 </form>
 <form method="GET" action="index.php">
-	<input type="hidden" value=<?php echo $next_year ?> name="year">
-	<input type="hidden" value=<?php echo $next_month ?> name="month">
+	<input type="hidden" value=<?php echo jumpyear(1) ?> name="year">
+	<input type="hidden" value=<?php echo jumpmonth(1) ?> name="month">
 	<input type="submit" value="＞＞">
 </form>
 
@@ -132,45 +142,28 @@ function countweek($target) {
 	<table>
 	<tr><?php echo $value['year'] . '年' . $value['month'] . '月' ?></tr>
 		<tr>
-			<td style="background:#ffcccc" >日</td>
+			<td style="background:pink" >日</td>
 			<td>月</td>
 			<td>火</td>
 			<td>水</td>
 			<td>木</td>
 			<td>金</td>
-			<td style="background:#aaccff" >土</td>
+			<td style="background:lightblue" >土</td>
 		</tr>
 		<?php
 		// 週の数だけ繰り返す
 		for($i = 0, $c = countday($value['time']); $i < countweek($value['time']); $i++) : ?>
 		<tr>
 			<?php for($j = 0 ; $j < 7 ; $j++ ) : ?>
-				<td <?php
-				//本日の日付のセルを黄色に
-				if ($value['year'] == date(Y) && $value['month'] == date(n) && $c == date(j) ) : ?>
-					style="background:#ffffaa"
-				<?php endif ?>
-				<?php
-				//日曜日を赤に
-				if ($j == 0) : ?>
-					style="background:#ffcccc"
-				<?php endif ?>
-				<?php
-				//土曜を青に
-				if ($j == 6) : ?>
-					style="background:#aaccff"
-				<?php endif ?>
-				> <?php //1〜月の日数を表示
-				if($c > 0 && $c <= lastday($value['time'])) {
-	 				echo $c; 
-	 			} ?></td>
-				<?php //土曜だったらループを抜ける
-				if(($c + startday($value['time'])) % 7 == 0) {
-					$c++;
-					break;
-				} ?>
-			<?php $c++;
-			endfor ?>
+				<td class="<?php
+				echo addcolor($value['time'], $value['year'], $value['month'], $c);
+				?>">
+				<?php if($c > 0 && $c <= lastday($value['time'])) {
+	 				echo $c;
+	 			}
+	 			$c++; ?>
+				</td>
+			<?php endfor ?>
 		</tr>
 		<?php endfor ?>
 	</table>
