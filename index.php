@@ -62,10 +62,40 @@ function startcolor($day){
 }
 
 
+//祝日取得の関数はネットを参照
+function getHolidays($start, $finish) {
+	$holidays = array();
+ 
+	//Googleカレンダーから、指定年の祝日情報をJSON形式で取得するためのURL
+	$url = sprintf(
+		'http://www.google.com/calendar/feeds/%s/public/full?alt=json&%s&%s',
+		'japanese__ja%40holiday.calendar.google.com',
+		'start-min=' . $start,
+		'start-max=' . $finish
+	);
+
+	//JSON形式で取得した情報を配列に変換
+	$results = json_decode(file_get_contents($url), true);
+
+ 	//年月日（例：20120512）をキーに、祝日名を配列に格納
+	foreach ($results['feed']['entry'] as $value) {
+		$date = str_replace('-', '', $value['gd$when'][0]['startTime']);
+		$title = $value['title']['$t'];
+		$holidays[$date] = $title;
+	}
+ 
+	//祝日の配列を早い順に並び替え
+	ksort($holidays);
+ 
+	//配列として祝日を返す
+	return $holidays;
+}
+
+
 //年月を取得、nullの場合は今月の値
 $this_year = $_GET["year"];
 $this_month= $_GET["month"];
-if (empty($this_year)) $this_year  = date(Y);
+if (empty($this_year)) $this_year   = date(Y);
 if (empty($this_month)) $this_month = date(n);
 
 $target_time = mktime(0,0,0,$this_month,1,$this_year);
@@ -96,14 +126,21 @@ if (empty($start_days_of_the_week)) $start_days_of_the_week  = 0;
 
 //曜日名を配列化
 $daysname = array(
-	(7 - $start_days_of_the_week) % 7 => '日', 
-	(8 - $start_days_of_the_week) % 7 => '月',
-	(9 - $start_days_of_the_week) % 7 => '火',
+	(7  - $start_days_of_the_week) % 7 => '日', 
+	(8  - $start_days_of_the_week) % 7 => '月',
+	(9  - $start_days_of_the_week) % 7 => '火',
 	(10 - $start_days_of_the_week) % 7 => '水',
 	(11 - $start_days_of_the_week) % 7 => '木',
 	(12 - $start_days_of_the_week) % 7 => '金',
 	(13 - $start_days_of_the_week) % 7 => '土',
 	);
+
+
+//祝日を調べる範囲
+$start_holiday  = date('Y-m-d',jumptime($pmonth));
+$finish_holiday = date('Y-m-d',jumptime($nmonth+1));
+
+//var_dump(getHolidays($start_holiday, $finish_holiday));
 
 ?>
 
@@ -139,7 +176,8 @@ $daysname = array(
 		<option value=<?php echo $k;
 		if ($k == $this_year) {
 			echo " selected";
-		} ?>><?php echo $k.'年' ?></option>
+		} ?>><?php echo $k.'年' ?>
+		</option>
 	<?php endfor ?>
 	</select>
 	<select name="month">
@@ -198,29 +236,27 @@ $daysname = array(
 
 <?php foreach ($year_months as $key => $value) :?>
 	<table>
-	<tr><td colspan="7" align="center"><?php echo $value['year'] . '年' . $value['month'] . '月' ?></td></tr>
 		<tr>
-			<?php for ($i=0; $i <7 ; $i++) : ?>
-						<td class="<?php
-			echo startcolor($i);
-			?>" ><?php echo $daysname["$i"] ?></td>
-			<?php endfor ?>
+			<td colspan="7" align="center"><?php echo $value['year'] . '年' . $value['month'] . '月' ?></td>
 		</tr>
-		<?php
-		// 週の数だけ繰り返す
-		for($i = 0, $c = countday($value['time']); $i < countweek($value['time']); $i++) : ?>
 		<tr>
-			<?php for($j = 0 ; $j < 7 ; $j++ ) : ?>
-				<td class="<?php
-				echo addcolor($value['time'], $value['year'], $value['month'], $c);
-				?>">
-				<?php if($c > 0 && $c <= lastday($value['time'])) {
-	 				echo $c;
-	 			}
-	 			$c++; ?>
+			<?php for ($i=0; $i<7; $i++) : ?>
+				<td class="<?php echo startcolor($i) ?>" >
+					<?php echo $daysname["$i"] ?>
 				</td>
 			<?php endfor ?>
 		</tr>
+		<?php for($i=0, $c=countday($value['time']); $i<countweek($value['time']); $i++) : ?>
+			<tr>
+				<?php for ($j=0; $j<7; $j++) : ?>
+					<td class="<?php echo addcolor($value['time'], $value['year'], $value['month'], $c) ?>">
+						<?php if($c > 0 && $c <= lastday($value['time'])) {
+			 				echo $c;
+			 			}
+			 			$c++; ?>
+					</td>
+				<?php endfor ?>
+			</tr>
 		<?php endfor ?>
 	</table>
 <?php endforeach ?>
