@@ -37,6 +37,7 @@ function countweek($target) {
 
 //カレンダーの色付け（今日、土日）	
 function addcolor($time, $year, $month, $day){
+	global $holiday;
 	$this_day = strtotime($day-1 . ' day', $time);
 	if (date("Y/m/d",$this_day) == date("Y/m/d")) {
 		return "today ";
@@ -46,6 +47,9 @@ function addcolor($time, $year, $month, $day){
 	}
 	if (date(w,$this_day) == 6) {
 		return "saturday ";
+	}
+	if ($holiday[date("Ymd",$this_day)] !== null){
+		return "holiday";
 	}
 }
 
@@ -60,7 +64,6 @@ function startcolor($day){
 		return "saturday ";
 	}
 }
-
 
 //祝日取得の関数はネットを参照
 function getHolidays($start, $finish) {
@@ -89,6 +92,15 @@ function getHolidays($start, $finish) {
  
 	//配列として祝日を返す
 	return $holidays;
+}
+
+//祝日の場合にその日の値をdate("Ymd"）で返す
+function addholiday($time, $year, $month, $day){
+	global $holiday;
+	$this_day = strtotime($day-1 . ' day', $time);
+	if ($holiday[date("Ymd",$this_day)] !== null){
+		return date("Ymd",$this_day);
+	}
 }
 
 
@@ -140,7 +152,8 @@ $daysname = array(
 $start_holiday  = date('Y-m-d',jumptime($pmonth));
 $finish_holiday = date('Y-m-d',jumptime($nmonth+1));
 
-//var_dump(getHolidays($start_holiday, $finish_holiday));
+//祝日を取得
+$holiday = getHolidays($start_holiday, $finish_holiday);
 
 ?>
 
@@ -158,9 +171,10 @@ $finish_holiday = date('Y-m-d',jumptime($nmonth+1));
 		padding: 0.5em;
 	}
 
-	.today{background-color: yellow;}
-	.sunday{background-color: pink;}
-	.saturday{background-color: lightblue;}
+	.today{background-color: #FFFFAD;}
+	.sunday{background-color: #FFADAD;}
+	.saturday{background-color: #AFFFFF;}
+	.holiday{background-color: #FFADFF;}
 
 	.left{margin:3px; float:left;}
 	.frame{border: solid 1px;padding: 0.5em;}
@@ -250,10 +264,13 @@ $finish_holiday = date('Y-m-d',jumptime($nmonth+1));
 			<tr>
 				<?php for ($j=0; $j<7; $j++) : ?>
 					<td class="<?php echo addcolor($value['time'], $value['year'], $value['month'], $c) ?>">
-						<?php if($c > 0 && $c <= lastday($value['time'])) {
-			 				echo $c;
-			 			}
-			 			$c++; ?>
+						<div>
+							<?php if($c > 0 && $c <= lastday($value['time'])) echo $c ?>
+				 		</div>
+				 		<div>
+				 			<?php echo $holiday[addholiday($value['time'], $value['year'], $value['month'], $c)];
+				 			$c++; ?>
+				 		<div>
 					</td>
 				<?php endfor ?>
 			</tr>
