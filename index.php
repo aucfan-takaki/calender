@@ -39,17 +39,31 @@ function countweek($target) {
 function addcolor($time, $year, $month, $day){
 	global $holiday;
 	$this_day = strtotime($day-1 . ' day', $time);
-	if (date("Y/m/d",$this_day) == date("Y/m/d")) {
-		return "today ";
-	}
-	if (date(w,$this_day) == 0) {
-		return "sunday ";
-	}
-	if (date(w,$this_day) == 6) {
-		return "saturday ";
-	}
-	if ($holiday[date("Ymd",$this_day)] !== null){
-		return "holiday";
+	if ($day > 0 && $day <= lastday($time)){
+		if (date("Y/m/d",$this_day) == date("Y/m/d")) {
+			return "today ";
+		}
+		if (date(w,$this_day) == 0) {
+			return "sunday ";
+		}
+		if (date(w,$this_day) == 6) {
+			return "saturday ";
+		}
+		if ($holiday[date("Ymd",$this_day)] !== null){
+			return "holiday";
+		}
+	}else{
+		if (date("Y/m/d",$this_day) == date("Y/m/d")) {
+			return "gtoday ";
+		}elseif (date(w,$this_day) == 0) {
+			return "gsunday ";
+		}elseif (date(w,$this_day) == 6) {
+			return "gsaturday ";
+		}elseif ($holiday[date("Ymd",$this_day)] !== null){
+			return "gholiday";
+		}else{
+			return "glay";
+		}
 	}
 }
 
@@ -169,12 +183,21 @@ $holiday = getHolidays($start_holiday, $finish_holiday);
 	td {
 		border: solid 1px;
 		padding: 0.5em;
+		border-color: #000000;
+		width: 70px;
+		height: 70px;
 	}
 
 	.today{background-color: #FFFFAD;}
 	.sunday{background-color: #FFADAD;}
 	.saturday{background-color: #AFFFFF;}
 	.holiday{background-color: #FFADFF;}
+
+	.gtoday{background-color: #FFFFAD; color: #C8C8C8;}
+	.gsunday{background-color: #FFADAD; color: #C8C8C8;}
+	.gsaturday{background-color: #AFFFFF; color: #C8C8C8;}
+	.gholiday{background-color: #FFADFF; color: #C8C8C8;}
+	.glay{color: #C8C8C8;}
 
 	.left{margin:3px; float:left;}
 	.frame{border: solid 1px;padding: 0.5em;}
@@ -264,13 +287,19 @@ $holiday = getHolidays($start_holiday, $finish_holiday);
 			<tr>
 				<?php for ($j=0; $j<7; $j++) : ?>
 					<td class="<?php echo addcolor($value['time'], $value['year'], $value['month'], $c) ?>">
-						<div>
-							<?php if($c > 0 && $c <= lastday($value['time'])) echo $c ?>
-				 		</div>
-				 		<div>
-				 			<?php echo $holiday[addholiday($value['time'], $value['year'], $value['month'], $c)];
-				 			$c++; ?>
-				 		<div>
+						<?php if($c > 0 && $c <= lastday($value['time'])) : ?>
+							<div>
+								 <?php echo $c ?>
+					 		</div>
+					 	<?php else :?>
+					 		<div>
+								 <?php echo date(j,strtotime($c-1 . ' day', $value['time'])) ?>
+					 		</div>
+					 	<?php endif ?>
+					 		<div style="font-size: 8px">
+					 			<?php echo $holiday[addholiday($value['time'], $value['year'], $value['month'], $c)];?>
+					 		</div>
+				 		<?php $c++ ?>
 					</td>
 				<?php endfor ?>
 			</tr>
