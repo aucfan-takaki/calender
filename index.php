@@ -86,7 +86,9 @@ function getHolidays($start, $finish) {
 	//Googleカレンダーから、指定年の祝日情報をJSON形式で取得するためのURL
 	$url = sprintf(
 		'http://www.google.com/calendar/feeds/%s/public/full?alt=json&%s&%s',
-		'japanese__ja%40holiday.calendar.google.com',
+		//'ja.japanese%23holiday%40group.v.calendar.google.com',
+		//'japanese__ja%40holiday.calendar.google.com',
+		'outid3el0qkcrsuf89fltf7a4qbacgt9@import.calendar.google.com',
 		'start-min=' . $start,
 		'start-max=' . $finish
 	);
@@ -98,7 +100,8 @@ function getHolidays($start, $finish) {
 	foreach ($results['feed']['entry'] as $value) {
 		$date = str_replace('-', '', $value['gd$when'][0]['startTime']);
 		$title = $value['title']['$t'];
-		$holidays[$date] = $title;
+		$word = explode( ' / ', $title);
+		$holidays[$date] = $word[0];
 	}
  
 	//祝日の配列を早い順に並び替え
@@ -274,19 +277,25 @@ $holiday = getHolidays($start_holiday, $finish_holiday);
 <?php foreach ($year_months as $key => $value) :?>
 	<table>
 		<tr>
-			<td colspan="7" align="center"><?php echo $value['year'] . '年' . $value['month'] . '月' ?></td>
+			<td colspan="7" align="center">
+				<div style="font-size: 30px">
+					<?php echo $value['year'] . '年' . $value['month'] . '月' ?>
+				</div>
+			</td>
 		</tr>
 		<tr>
 			<?php for ($i=0; $i<7; $i++) : ?>
 				<td class="<?php echo startcolor($i) ?>" >
-					<?php echo $daysname["$i"] ?>
+					<div align="center">
+						<?php echo $daysname["$i"] ?>
+					</div>
 				</td>
 			<?php endfor ?>
 		</tr>
 		<?php for($i=0, $c=countday($value['time']); $i<countweek($value['time']); $i++) : ?>
 			<tr>
 				<?php for ($j=0; $j<7; $j++) : ?>
-					<td class="<?php echo addcolor($value['time'], $value['year'], $value['month'], $c) ?>">
+					<td class="<?php echo addcolor($value['time'], $value['year'], $value['month'], $c) ?>" align="left" valign="top">
 						<?php if($c > 0 && $c <= lastday($value['time'])) : ?>
 							<div>
 								 <?php echo $c ?>
