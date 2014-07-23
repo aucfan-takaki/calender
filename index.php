@@ -1,43 +1,112 @@
 <?php
 
-//$countヶ月後の1日のタイムスタンプ	
-function jumptime($count) {
-	global $target_time;
+/**
+     * 「$countヶ月後の1日のタイムスタンプ」を出力する
+     *
+     * @access public
+     * @param integer $count 第一引数
+     * @return integer
+     * @author Shota Takaki
+     */
+function jumptime($count, $target_time = null)
+{
+	if (is_null($target_time)) {
+		$target_time = strtotime("now");
+	}
 	return strtotime($count . ' month', $target_time);
 }
-//$countヶ月後の年の値
-function jumpyear($count) {
-	return date("Y", jumptime($count));
-}
-//$countヶ月後の月の値
-function jumpmonth($count) {
-	return date("n", jumptime($count));
+
+/**
+     * 「$countヶ月後の年の値」を出力する
+     *
+     * @access public
+     * @param integer $count 第一引数
+     * @return integer
+     * @author Shota Takaki
+     */
+function jumpyear($count, $target_time)
+{
+	return date("Y", jumptime($count, $target_time));
 }
 
-//参照月から$targetヶ月後の日数
-function lastday($target) {
+/**
+     * 「$countヶ月後の月の値」を出力する
+     *
+     * @access public
+     * @param integer $count 第一引数
+     * @return integer
+     * @author Shota Takaki
+     */
+function jumpmonth($count, $target_time)
+{
+	return date("n", jumptime($count, $target_time));
+}
+
+/**
+     * 「参照月から$targetヶ月後の日数」を出力する
+     *
+     * @access public
+     * @param integer $target 第一引数
+     * @return integer
+     * @author Shota Takaki
+     */
+function lastday($target)
+{
 	return date(t, $target);
 }
 
-//参照月から$targetヶ月後の1日の曜日を計算(0~6:日~土)
-function startday($target) {
+/**
+     * 「参照月から$targetヶ月後の1日の曜日の値(0~6:日~土)」を出力する
+     *
+     * @access public
+     * @param integer $target 第一引数
+     * @return integer
+     * @author Shota Takaki
+     */
+function startday($target)
+{
 	return date(w,$target);
 }
 
-//カレンダーの1マス目の日数
-function countday($target) {
-	global $start_days_of_the_week;
+/**
+     * 「カレンダーの1マス目の日数」を出力する
+     *
+     * @access public
+     * @param integer $target 第一引数
+     * @return integer
+     * @author Shota Takaki
+     */
+function countday($target, $start_days_of_the_week)
+{
 	return 1 - (startday($target) - $start_days_of_the_week + 7) % 7;
 }
 
-//カレンダーの週数
-function countweek($target) {
-	return ceil((lastday($target) - countday($target) + 1 ) / 7);
+/**
+     * 「カレンダーの週数」を出力する
+     *
+     * @access public
+     * @param integer $target 第一引数
+     * @return integer
+     * @author Shota Takaki
+     */
+function countweek($target, $start_days_of_the_week)
+{
+	return ceil((lastday($target) - countday($target, $start_days_of_the_week) + 1 ) / 7);
 }
 
-//カレンダーの色付け（今日、土日）	
-function addcolor($time, $year, $month, $day){
-	global $holiday;
+/**
+     * 「カレンダーの色付け（今日、土、日、祝日）のためのclassの文字列」を出力する
+     *
+     * @access public
+     * @param integer $time 第一引数
+     * @param integer $year 第二引数
+     * @param integer $month 第三引数
+     * @param integer $day 第四引数
+     * @return string
+     * @author Shota Takaki
+     */
+function addcolor($time, $year, $month, $day, $holiday)
+{
 	$this_day = strtotime($day-1 . ' day', $time);
 	if ($day > 0 && $day <= lastday($time)){
 		if (date("Y/m/d",$this_day) == date("Y/m/d")) {
@@ -67,9 +136,17 @@ function addcolor($time, $year, $month, $day){
 	}
 }
 
-//曜日の色付け（日本語用）
-function startcolor($day){
-	global $start_days_of_the_week;
+
+/**
+     * 「曜日の色付け（日本語用）のためのclassの文字列」を出力する
+     *
+     * @access public
+     * @param integer $day 第一引数
+     * @return string
+     * @author Shota Takaki
+     */
+function startcolor($day, $start_days_of_the_week)
+{
 	$judge = ($day + $start_days_of_the_week) % 7;
 	if ($judge == 0) {
 		return "sunday ";
@@ -79,15 +156,20 @@ function startcolor($day){
 	}
 }
 
-//祝日取得の関数はネットを参照
+/**
+     * 「祝日」を取得する（ネット参照）
+     *
+     * @access public
+     * @param integer $count 第一引数
+     * @return integer
+     * @author Shota Takaki
+     */
 function getHolidays($start, $finish) {
 	$holidays = array();
  
 	//Googleカレンダーから、指定年の祝日情報をJSON形式で取得するためのURL
 	$url = sprintf(
 		'http://www.google.com/calendar/feeds/%s/public/full?alt=json&%s&%s',
-		//'ja.japanese%23holiday%40group.v.calendar.google.com',
-		//'japanese__ja%40holiday.calendar.google.com',
 		'outid3el0qkcrsuf89fltf7a4qbacgt9@import.calendar.google.com',
 		'start-min=' . $start,
 		'start-max=' . $finish
@@ -111,15 +193,24 @@ function getHolidays($start, $finish) {
 	return $holidays;
 }
 
-//祝日の場合にその日の値をdate("Ymd"）で返す
-function addholiday($time, $year, $month, $day){
-	global $holiday;
+/**
+     *祝日の場合、その日の値を「date("Ymd"）」で出力する
+     *
+     * @access public
+     * @param integer $time 第一引数
+     * @param integer $year 第二引数
+     * @param integer $month 第三引数
+     * @param integer $day 第四引数
+     * @return integer
+     * @author Shota Takaki
+     */
+function addholiday($time, $year, $month, $day, $holiday)
+{
 	$this_day = strtotime($day-1 . ' day', $time);
 	if ($holiday[date("Ymd",$this_day)] !== null){
 		return date("Ymd",$this_day);
 	}
 }
-
 
 //年月を取得、nullの場合は今月の値
 $this_year = $_GET["year"];
@@ -143,9 +234,9 @@ if ($show_month % 2 == 1) {
 $year_months = array();
 for ($i = $pmonth; $i <= $nmonth; $i++) { 
 	$year_months[$i] = array(
-	'time' => jumptime($i),
-	'year' => jumpyear($i),
-	'month' => jumpmonth($i),
+	'time' => jumptime($i, $target_time),
+	'year' => jumpyear($i, $target_time),
+	'month' => jumpmonth($i, $target_time),
 	);
 }
 
@@ -166,8 +257,8 @@ $daysname = array(
 
 
 //祝日を調べる範囲
-$start_holiday  = date('Y-m-d',jumptime($pmonth));
-$finish_holiday = date('Y-m-d',jumptime($nmonth+1));
+$start_holiday  = date('Y-m-d',jumptime($pmonth, $target_time));
+$finish_holiday = date('Y-m-d',jumptime($nmonth+1, $target_time));
 
 //祝日を取得
 $holiday = getHolidays($start_holiday, $finish_holiday);
@@ -210,7 +301,7 @@ $holiday = getHolidays($start_holiday, $finish_holiday);
 </head>
 <body>
 
-<form method="GET" action="index.php">
+<form method="GET" action="">
 	<select name="year">
 	<?php for ($k = $this_year - 5; $k < $this_year + 6; $k++) : ?>
 		<option value=<?php echo $k;
@@ -252,23 +343,23 @@ $holiday = getHolidays($start_holiday, $finish_holiday);
 </form>
 
 
-<form method="GET" action="index.php">
-	<input type="hidden" value=<?php echo jumpyear(-1) ?> name="year">
-	<input type="hidden" value=<?php echo jumpmonth(-1) ?> name="month">
+<form method="GET" action="">
+	<input type="hidden" value=<?php echo jumpyear(-1, $target_time) ?> name="year">
+	<input type="hidden" value=<?php echo jumpmonth(-1, $target_time) ?> name="month">
 	<input type="hidden" value=<?php echo $show_month ?> name="show">
 	<input type="hidden" value=<?php echo $start_days_of_the_week ?> name="startweek">
 	<input type="submit" value="＜＜" class="left">
 </form>
-<form method="GET" action="index.php">
+<form method="GET" action="">
 	<input type="hidden" value=<?php echo date("Y") ?> name="year">
 	<input type="hidden" value=<?php echo date("n") ?> name="month">
 	<input type="hidden" value=<?php echo $show_month ?> name="show">
 	<input type="hidden" value=<?php echo $start_days_of_the_week ?> name="startweek">
 	<input type="submit" value="今月" class="left">
 </form>
-<form method="GET" action="index.php">
-	<input type="hidden" value=<?php echo jumpyear(1) ?> name="year">
-	<input type="hidden" value=<?php echo jumpmonth(1) ?> name="month">
+<form method="GET" action="">
+	<input type="hidden" value=<?php echo jumpyear(1, $target_time) ?> name="year">
+	<input type="hidden" value=<?php echo jumpmonth(1, $target_time) ?> name="month">
 	<input type="hidden" value=<?php echo $show_month ?> name="show">
 	<input type="hidden" value=<?php echo $start_days_of_the_week ?> name="startweek">
 	<input type="submit" value="＞＞" >
@@ -285,17 +376,17 @@ $holiday = getHolidays($start_holiday, $finish_holiday);
 		</tr>
 		<tr>
 			<?php for ($i=0; $i<7; $i++) : ?>
-				<td class="<?php echo startcolor($i) ?>" >
+				<td class="<?php echo startcolor($i, $start_days_of_the_week) ?>" >
 					<div align="center">
 						<?php echo $daysname["$i"] ?>
 					</div>
 				</td>
 			<?php endfor ?>
 		</tr>
-		<?php for($i=0, $c=countday($value['time']); $i<countweek($value['time']); $i++) : ?>
+		<?php for($i=0, $c=countday($value['time'], $start_days_of_the_week); $i<countweek($value['time'], $start_days_of_the_week); $i++) : ?>
 			<tr>
 				<?php for ($j=0; $j<7; $j++) : ?>
-					<td class="<?php echo addcolor($value['time'], $value['year'], $value['month'], $c) ?>" align="left" valign="top">
+					<td class="<?php echo addcolor($value['time'], $value['year'], $value['month'], $c, $holiday) ?>" align="left" valign="top">
 						<?php if($c > 0 && $c <= lastday($value['time'])) : ?>
 							<div>
 								 <?php echo $c ?>
@@ -306,7 +397,7 @@ $holiday = getHolidays($start_holiday, $finish_holiday);
 					 		</div>
 					 	<?php endif ?>
 					 		<div style="font-size: 8px">
-					 			<?php echo $holiday[addholiday($value['time'], $value['year'], $value['month'], $c)];?>
+					 			<?php echo $holiday[addholiday($value['time'], $value['year'], $value['month'], $c, $holiday)];?>
 					 		</div>
 				 		<?php $c++ ?>
 					</td>
