@@ -186,7 +186,8 @@ class Calendar
           $holidays = array();
       
           //Googleカレンダーから、指定年の祝日情報をJSON形式で取得するためのURL
-          $url = sprintf(
+          $url = sprintf
+          (
                'http://www.google.com/calendar/feeds/%s/public/full?alt=json&%s&%s',
                'outid3el0qkcrsuf89fltf7a4qbacgt9@import.calendar.google.com',
                'start-min=' . $start,
@@ -197,7 +198,8 @@ class Calendar
           $results = json_decode(file_get_contents($url), true);
 
           //年月日（例：20120512）をキーに、祝日名を配列に格納
-          foreach ($results['feed']['entry'] as $value) {
+          foreach ($results['feed']['entry'] as $value)
+          {
                $date = str_replace('-', '', $value['gd$when'][0]['startTime']);
                $title = $value['title']['$t'];
                $word = explode( ' / ', $title);
@@ -226,6 +228,54 @@ class Calendar
      {
           $this_day = strtotime($day-1 . ' day', $time);
           if ($holiday[date("Ymd",$this_day)] !== null){
+               return date("Ymd",$this_day);
+          }
+     }
+
+     /**
+      *オクトピを[日付][記事数][タイトルorURL]で取得
+      *
+      * @access public
+      * @param 無し
+      * @return integer
+      * @author Shota Takaki
+      */
+     public function getauc()
+     {
+          $rss ='http://aucfan.com/article/feed/';
+          //ファイルの中の整形式 XML ドキュメントをオブジェクトに変換
+          $xml = simplexml_load_file($rss);
+          
+          //xmlから年月日とtitle、linkを取得
+          foreach ($xml->channel->item as $value) 
+          {
+               $pub_date = $value->pubDate;
+               $date = date('Ymd', strtotime($pub_date));
+               
+               $aucdata[$date][] = array(
+               'title' => (string)$value->title,
+               'link' => (string)$value->link
+               );
+          }
+          return $aucdata;
+     }
+
+     /**
+      *オクトピが書かれている場合、その日の値を「date("Ymd"）」で出力する
+      *
+      * @access public
+      * @param integer $time
+      * @param integer $year
+      * @param integer $month
+      * @param integer $day
+      * @param integer $auctopic
+      * @return integer
+      * @author Shota Takaki
+      */
+     public function addauc($time, $year, $month, $day, $auctopic)
+     {
+          $this_day = strtotime($day-1 . ' day', $time);
+          if ($auctopic[date("Ymd",$this_day)][0]['title'] !== null){
                return date("Ymd",$this_day);
           }
      }
