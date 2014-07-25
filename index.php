@@ -56,6 +56,8 @@ $finish_holiday = date('Y-m-d',$cal->jumptime($nmonth+1, $target_time));
 //祝日を取得
 $holiday = $cal->getHolidays($start_holiday, $finish_holiday);
 
+$auctopic = $cal->getauc();
+
 ?>
 
 <!DOCTYPE html>
@@ -192,6 +194,11 @@ $holiday = $cal->getHolidays($start_holiday, $finish_holiday);
 					 		<div style="font-size: 8px">
 					 			<?php echo $holiday[$cal->addholiday($value['time'], $value['year'], $value['month'], $c, $holiday)];?>
 					 		</div>
+					 		<div style="font-size: 8px">
+					 			<a href="<?php echo $auctopic[$cal->addauc($value['time'], $value['year'], $value['month'], $c, $auctopic)][0]['link'];?>">
+		                			<?php echo $auctopic[$cal->addauc($value['time'], $value['year'], $value['month'], $c, $auctopic)][0]['title'];?>
+		                		</a>
+	                        </div>
 				 		<?php $c++ ?>
 					</td>
 				<?php endfor ?>
