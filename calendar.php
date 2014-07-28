@@ -253,7 +253,7 @@ class Calendar
                $date = date('Ymd', strtotime($pub_date));
                
                $aucdata[$date][] = array(
-               'title' => (string)$value->title,
+               'title' => (string)mb_strimwidth($value->title, 0, 24, "…", utf8),
                'link' => (string)$value->link
                );
           }
