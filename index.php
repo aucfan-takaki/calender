@@ -6,7 +6,7 @@ require_once dirname(__FILE__). '/calendar.php';
 $this_year = $_GET["year"];
 $this_month= $_GET["month"];
 if (empty($this_year)) $this_year   = date(Y);
-if (empty($this_month)) $this_month = date(n);
+if (empty($this_month)) $this_month = date(m);
 
 $target_time = mktime(0,0,0,$this_month,1,$this_year);
 
@@ -58,6 +58,8 @@ $holiday = $cal->getHolidays($start_holiday, $finish_holiday);
 
 $auctopic = $cal->getauc();
 
+$schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
+
 ?>
 
 <!DOCTYPE html>
@@ -98,41 +100,41 @@ $auctopic = $cal->getauc();
 
 <form method="GET" action="">
 	<select name="year">
-	<?php for ($k = $this_year - 5; $k < $this_year + 6; $k++) : ?>
-		<option value=<?php echo $k;
-		if ($k == $this_year) {
-			echo " selected";
-		} ?>><?php echo $k.'年' ?>
-		</option>
-	<?php endfor ?>
+		<?php for ($k = $this_year - 5; $k < $this_year + 6; $k++) : ?>
+			<option value=<?php echo $k;
+			if ($k == $this_year) {
+				echo " selected";
+			} ?>><?php echo $k.'年' ?>
+			</option>
+		<?php endfor ?>
 	</select>
 	<select name="month">
-	<?php for ($k = 1; $k <= 12; $k++) : ?>
-		<option value=<?php echo $k;
-		if ($k == $this_month) {
-			echo " selected";
-		} ?>><?php echo $k.'月' ?>
-		</option>
-	<?php endfor ?>
+		<?php for ($k = 1; $k <= 12; $k++) : ?>
+			<option value=<?php echo $k;
+			if ($k == $this_month) {
+				echo " selected";
+			} ?>><?php echo $k.'月' ?>
+			</option>
+		<?php endfor ?>
 	</select>
-	<select name="show">
-	<?php for ($k = 1; $k <= 12; $k++) : ?>
-		<option value=<?php echo $k;
-		if ($k == $show_month) {
-			echo " selected";
-		} ?>><?php echo $k.'月分表示' ?>
-		</option>
-	<?php endfor ?>
+		<select name="show">
+		<?php for ($k = 1; $k <= 12; $k++) : ?>
+			<option value=<?php echo $k;
+			if ($k == $show_month) {
+				echo " selected";
+			} ?>><?php echo $k.'月分表示' ?>
+			</option>
+		<?php endfor ?>
 	</select>
 	<select name="startweek">
-	<?php for ($k = 0; $k < 7; $k++) : ?>
-		<option value=<?php echo $k;
-		if ($k == $start_days_of_the_week) {
-			echo " selected";
-		} ?>>
-		<?php echo $daysname[($k - $start_days_of_the_week +7) %7].'曜日から表示' ?>
-		</option>
-	<?php endfor ?>
+		<?php for ($k = 0; $k < 7; $k++) : ?>
+			<option value=<?php echo $k;
+			if ($k == $start_days_of_the_week) {
+				echo " selected";
+			} ?>>
+			<?php echo $daysname[($k - $start_days_of_the_week +7) %7].'曜日から表示' ?>
+			</option>
+		<?php endfor ?>
 	</select>
 	<input type="submit" value="反映する">
 </form>
@@ -147,7 +149,7 @@ $auctopic = $cal->getauc();
 </form>
 <form method="GET" action="">
 	<input type="hidden" value=<?php echo date("Y") ?> name="year">
-	<input type="hidden" value=<?php echo date("n") ?> name="month">
+	<input type="hidden" value=<?php echo date("m") ?> name="month">
 	<input type="hidden" value=<?php echo $show_month ?> name="show">
 	<input type="hidden" value=<?php echo $start_days_of_the_week ?> name="startweek">
 	<input type="submit" value="今月" class="left">
@@ -199,6 +201,9 @@ $auctopic = $cal->getauc();
 		                			<?php echo $auctopic[$cal->addauc($value['time'], $value['year'], $value['month'], $c, $auctopic)][0]['title'];?>
 		                		</a>
 	                        </div>
+	                        <div style="font-size: 8px">
+					 			<?php echo $schedule[date(Ymd, mktime(0,0,0,$value['month'],$c,$value['year']))][0]['title']?>
+					 		</div>
 				 		<?php $c++ ?>
 					</td>
 				<?php endfor ?>

@@ -50,7 +50,7 @@ class Calendar
       */
      public function jumpmonth($count, $target_time)
      {
-          return date("n", $this->jumptime($count, $target_time));
+          return date("m", $this->jumptime($count, $target_time));
      }
 
      /**
@@ -279,6 +279,102 @@ class Calendar
                return date("Ymd",$this_day);
           }
      }
-}
 
+     public function getdb($target_time, $pmonth, $nmonth)
+     {
+          //予定取得開始日
+          //$start_date  = date('Y-m-d H:i:s', strtotime($pmonth . ' month', $target_time));
+          $start_date  = date('Y-m-d H:i:s', strtotime($pmonth . ' month', $target_time));
+
+          //予定取得終了日
+          $finish_date = date('Y-m-d H:i:s', strtotime($nmonth . ' month' . '-1 second', $target_time ));
+
+          //var_dump($start_date);
+          //var_dump($finish_date);
+
+          $url = 'localhost';
+          $user = 'root';
+          $pass  ='';
+
+          //MySQLに接続
+          $link = mysqli_connect($url, $user, $pass);
+
+          //接続状態チェック
+          if (mysqli_connect_errno()) 
+          {
+               echo '接続に失敗しました';
+          }
+
+          $db_selected = mysqli_select_db($link, 'calendar');
+          if (!$db_selected)
+          {
+              die('データベース選択失敗です。'.mysqli_error());
+          }
+
+          //Insertテスト
+          //mysqli_query($link, "insert into schedules (title) value ('testphpinsert')");
+          
+          $result = mysqli_query($link, 'select * from schedules');
+          if (!$result) 
+          {
+              die('クエリーが失敗しました。'.mysqli_error());
+          }
+
+          //var_dump(mysqli_fetch_assoc($result));
+
+          //exit;
+
+          while ($row = mysqli_fetch_assoc($result))
+          {
+               //var_dump($row["title"]);
+
+               $start = date("Ymd", strtotime($row["start_at"]));
+
+               $sche[$start][] = $row;
+
+               /*$sche[$start] = array
+               (
+                    'title' => (string)$row['title'],
+               );*/
+          }
+
+          return $sche;
+
+     }
+
+
+     public function insert_sche($title, $start_at, $finish_at, $place, $remark)
+     {
+          $url = 'localhost';
+          $user = 'root';
+          $pass  ='';
+
+          //MySQLに接続
+          $link = mysqli_connect($url, $user, $pass);
+
+          //接続状態チェック
+          if (mysqli_connect_errno()) 
+          {
+               echo '接続に失敗しました';
+          }
+
+          $db_selected = mysqli_select_db($link, 'calendar');
+          if (!$db_selected)
+          {
+              die('データベース選択失敗です。'.mysqli_error());
+          }
+
+          $time = date("Y-m-d H:i:s");
+
+          //Insert
+          mysqli_query($link, 
+               "insert into schedules
+               (title, start_at, finish_at, place, remark, update_at, created_at) 
+               value 
+               ('$title', '$start_at', '$finish_at', '$place', '$remark', '$time', '$time')"
+          );
+     }
+
+}
+ 
 ?>
