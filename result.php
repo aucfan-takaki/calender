@@ -1,8 +1,7 @@
 <?php
 
 
-var_dump($_POST);
-
+//var_dump($_POST);
 
 //新規：値をGET（押した日付）
 //DB接続
@@ -22,11 +21,50 @@ $target_time = mktime(0,0,0,$this_month,1,$this_year);
 
 $cal = new Calendar($target_time);
 
-$start_time  = date("Y-m-d H:i:s", mktime(0,0,0, $_POST['s_month'], $_POST['s_day'], $_POST['s_year']));
+if ($_POST['result'] !== 2) {
 
-$finish_time = date("Y-m-d H:i:s", mktime(0,0,0, $_POST['f_month'], $_POST['f_day'], $_POST['f_year']));
+$s_time = strtotime($_POST['s_sche_time']);
 
-$cal->insert_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark']);
+$f_time = strtotime($_POST['f_sche_time']);
+
+$start_time  = date("Y-m-d H:i:s", mktime(date(H,$s_time), date(i,$s_time), date(s,$s_time), $_POST['s_month'], $_POST['s_day'], $_POST['s_year']));
+
+$finish_time = date("Y-m-d H:i:s", mktime(date(H,$f_time), date(i,$f_time), date(s,$f_time), $_POST['f_month'], $_POST['f_day'], $_POST['f_year']));
+
+}
+
+//idがnullだったら
+if ($_POST['result'] == 0) 
+{
+	$cal->insert_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark']);
+}
+elseif ($_POST['result'] == 1) 
+{
+	$cal->update_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark'], $_POST['id']);
+}
+elseif ($_POST['result'] == 2) 
+{
+	$cal->delete_sche($_POST['id']);
+}
+else
+{
+	echo "error";
+}
+
+?>
 
 
-//編集：値をGET（押した日付、id、
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<button type="button">
+		<a href="http://kensyu.aucfan.com/index.php">
+			カレンダーへ戻る	
+		</a>
+	</button>
+</body>
+</html>
+

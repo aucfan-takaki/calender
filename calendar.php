@@ -375,6 +375,96 @@ class Calendar
           );
      }
 
+     public function select_sche($id, $text)
+     {
+          $url = 'localhost';
+          $user = 'root';
+          $pass  ='';
+
+          //MySQLに接続
+          $link = mysqli_connect($url, $user, $pass);
+
+          //接続状態チェック
+          if (mysqli_connect_errno()) 
+          {
+               echo '接続に失敗しました';
+          }
+
+          $db_selected = mysqli_select_db($link, 'calendar');
+          if (!$db_selected)
+          {
+              die('データベース選択失敗です。'.mysqli_error());
+          }
+
+          $query = mysqli_query($link, 
+               "select $text from schedules
+               where
+               schedule_id = $id"
+          );
+
+          return mysqli_fetch_assoc($query);
+     }
+
+     public function update_sche($title, $start_at, $finish_at, $place, $remark, $id)
+     {
+          $url = 'localhost';
+          $user = 'root';
+          $pass  ='';
+
+          //MySQLに接続
+          $link = mysqli_connect($url, $user, $pass);
+
+          //接続状態チェック
+          if (mysqli_connect_errno()) 
+          {
+               echo '接続に失敗しました';
+          }
+
+          $db_selected = mysqli_select_db($link, 'calendar');
+          if (!$db_selected)
+          {
+              die('データベース選択失敗です。'.mysqli_error());
+          }
+
+          $time = date("Y-m-d H:i:s");
+
+          mysqli_query($link, 
+               "update schedules set
+               title = '$title', start_at = '$start_at', finish_at = '$finish_at', place = '$place', remark = '$remark', update_at = '$time'
+               where schedule_id = $id"
+          );
+     }
+
+     public function delete_sche($id)
+     {
+          $url = 'localhost';
+          $user = 'root';
+          $pass  ='';
+
+          //MySQLに接続
+          $link = mysqli_connect($url, $user, $pass);
+
+          //接続状態チェック
+          if (mysqli_connect_errno()) 
+          {
+               echo '接続に失敗しました';
+          }
+
+          $db_selected = mysqli_select_db($link, 'calendar');
+          if (!$db_selected)
+          {
+              die('データベース選択失敗です。'.mysqli_error());
+          }
+
+          $time = date("Y-m-d H:i:s");
+
+          mysqli_query($link, 
+               "update schedules set
+               deleted_at = '$time'
+               where schedule_id = $id"
+          );
+     }
+
 }
  
 ?>

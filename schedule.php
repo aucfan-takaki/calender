@@ -23,49 +23,86 @@ $cal = new Calendar($target_time);
 $this_day= $_GET["day"];
 if (empty($this_day)) $this_day  = date(d);
 
+$id= $_GET["id"];
 
+$schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 
-//編集：値をGET（押した日付、id、
-
-
-
+if (isset($id)) {
+$title = $cal->select_sche($id, 'title');
+$s_time = $cal->select_sche($id, 'start_at');
+$f_time = $cal->select_sche($id, 'finish_at');
+$place = $cal->select_sche($id, 'place');
+$remark = $cal->select_sche($id, 'remark');
+}
 
 ?>
 
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<?php if (!isset($id)) : ?>
+		<form method="post" action="result.php">
+			タイトル：
+			<input type="text" name="title" maxlength="64"/>
+			予定開始時間：
+			<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo ($this_year) ?>"/>年
+			<input type="text" name="s_month" size="1" maxlength="2" value="<?php echo ($this_month) ?>"/>月
+			<input type="text" name="s_day"   size="1" maxlength="2" value="<?php echo ($this_day) ?>"/>日
+			<input type="time" name="s_sche_time" step="1" value="00:00:00"/>
+			予定終了時間：
+			<input type="text" name="f_year"  size="3" maxlength="4" value="<?php echo ($this_year) ?>"/>年
+			<input type="text" name="f_month" size="1" maxlength="2" value="<?php echo ($this_month) ?>"/>月
+			<input type="text" name="f_day"   size="1" maxlength="2" value="<?php echo ($this_day) ?>"/>日
+			<input type="time" name="f_sche_time" step="1" value="00:00:00"/>
+			場所：
+			<input type="text" name="place" maxlength="64"/>
+			備考：
+			<input type="text" name="remark" size="100" maxlength="128"/>
 
-<form method="post" action="result.php">
-	タイトル：
-	<input type="text" name="title" maxlength="64"/>
-	予定開始時間：
-	<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo ($this_year) ?>"/>年
-	<input type="text" name="s_month" size="1" maxlength="2" value="<?php echo ($this_month) ?>"/>月
-	<input type="text" name="s_day"   size="1" maxlength="2" value="<?php echo ($this_day) ?>"/>日
-	<input type="time" name="s_sche_time" step="1" value="00:00:00"/>
-	予定終了時間：
-	<input type="text" name="f_year"  size="3" maxlength="4" value="<?php echo ($this_year) ?>"/>年
-	<input type="text" name="f_month" size="1" maxlength="2" value="<?php echo ($this_month) ?>"/>月
-	<input type="text" name="f_day"   size="1" maxlength="2" value="<?php echo ($this_day) ?>"/>日
-	<input type="time" name="f_sche_time" step="1" value="00:00:00"/>
-	場所：
-	<input type="text" name="place" maxlength="64"/>
-	備考：
-	<input type="text" name="remark" size="100" maxlength="128"/>
+			<input type="hidden" name="result" value="0"/>
 
-	<input type="submit" value="予定を反映させる"/>
+			<input type="submit" value="作成する"/>
 
-		<?php 
+		</form>
+	<?php else :?>
+		<form method="post" action="result.php">
+			タイトル：
+			<input type="text" name="title" maxlength="64" value="<?php echo ($title['title']) ?>" />
+			予定開始時間：
+			<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo (date(Y,strtotime($s_time['start_at']))) ?>"/>年
+			<input type="text" name="s_month" size="1" maxlength="2" value="<?php echo (date(n,strtotime($s_time['start_at']))) ?>"/>月
+			<input type="text" name="s_day"   size="1" maxlength="2" value="<?php echo (date(j,strtotime($s_time['start_at']))) ?>"/>日
+			<input type="time" name="s_sche_time" step="1" value="00:00:00"/>
+			予定終了時間：
+			<input type="text" name="f_year"  size="3" maxlength="4" value="<?php echo (date(Y,strtotime($f_time['finish_at']))) ?>"/>年
+			<input type="text" name="f_month" size="1" maxlength="2" value="<?php echo (date(n,strtotime($f_time['finish_at']))) ?>"/>月
+			<input type="text" name="f_day"   size="1" maxlength="2" value="<?php echo (date(j,strtotime($f_time['finish_at']))) ?>"/>日
+			<input type="time" name="f_sche_time" step="1" value="00:00:00"/>
+			場所：
+			<input type="text" name="place" maxlength="64" value="<?php echo ($place['place']) ?>"/>
+			備考：
+			<input type="text" name="remark" size="100" maxlength="128" value="<?php echo ($remark['remark']) ?>"/>
 
-		//関数呼び出し
-		//MySQLにデータ送信
-		//↓これをべつのページで
-		//$cal->insert_sche("翌営業日から本気出す", "2014-08-04 00:00:00", "2014-08-04 23:59:59", "デスク", "早く帰りたい");
+			<input type="hidden" name="id" value="<?php echo ($id) ?>"/>
 
-		//関数呼び出し
-		//ページ遷移	
+			<input type="hidden" name="result" value="1"/>
 
-		?>
+			<input type="submit" value="編集する"/>
 
-</form>
+		</form>
+		<form method="post" action="result.php">
+			<input type="hidden" name="id" value="<?php echo ($id) ?>"/>
+			<input type="hidden" name="result" value="2"/>
+			<input type="submit" value="削除する"/>
+		</form>
+
+	<?php endif ?>
+</body>
+</html>
+
 
 
 
