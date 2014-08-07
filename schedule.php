@@ -54,7 +54,7 @@ $remark = $cal->select_sche($id, 'remark');
 			場所：
 			<input type="text" name="place" maxlength="64"/>
 			備考：
-			<input type="text" name="remark" size="100" maxlength="128"/>
+			<textarea name="remark" size="100" maxlength="128"></textarea>
 
 			<input type="hidden" name="result" value="0"/>
 
@@ -64,23 +64,23 @@ $remark = $cal->select_sche($id, 'remark');
 	<?php else :?>
 		<form method="post" action="result.php">
 			タイトル：
-			<input type="text" name="title" maxlength="64" value="<?php echo ($title['title']) ?>" />
+			<input type="text" name="title" maxlength="64" value="<?php echo htmlspecialchars($title['title']) ?>" />
 			予定開始時間：
-			<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo (date(Y,strtotime($s_time['start_at']))) ?>"/>年
-			<input type="text" name="s_month" size="1" maxlength="2" value="<?php echo (date(n,strtotime($s_time['start_at']))) ?>"/>月
-			<input type="text" name="s_day"   size="1" maxlength="2" value="<?php echo (date(j,strtotime($s_time['start_at']))) ?>"/>日
-			<input type="time" name="s_sche_time" step="1" value="<?php echo (date("H:i:s",strtotime($s_time['start_at']))) ?>"/>
+			<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo htmlspecialchars(date(Y,strtotime($s_time['start_at']))) ?>"/>年
+			<input type="text" name="s_month" size="1" maxlength="2" value="<?php echo htmlspecialchars(date(n,strtotime($s_time['start_at']))) ?>"/>月
+			<input type="text" name="s_day"   size="1" maxlength="2" value="<?php echo htmlspecialchars(date(j,strtotime($s_time['start_at']))) ?>"/>日
+			<input type="time" name="s_sche_time" step="1" value="<?php echo htmlspecialchars(date("H:i:s",strtotime($s_time['start_at']))) ?>"/>
 			予定終了時間：
-			<input type="text" name="f_year"  size="3" maxlength="4" value="<?php echo (date(Y,strtotime($f_time['finish_at']))) ?>"/>年
-			<input type="text" name="f_month" size="1" maxlength="2" value="<?php echo (date(n,strtotime($f_time['finish_at']))) ?>"/>月
-			<input type="text" name="f_day"   size="1" maxlength="2" value="<?php echo (date(j,strtotime($f_time['finish_at']))) ?>"/>日
-			<input type="time" name="f_sche_time" step="1" value="<?php echo (date("H:i:s",strtotime($f_time['finish_at']))) ?>"/>
+			<input type="text" name="f_year"  size="3" maxlength="4" value="<?php echo htmlspecialchars(date(Y,strtotime($f_time['finish_at']))) ?>"/>年
+			<input type="text" name="f_month" size="1" maxlength="2" value="<?php echo htmlspecialchars(date(n,strtotime($f_time['finish_at']))) ?>"/>月
+			<input type="text" name="f_day"   size="1" maxlength="2" value="<?php echo htmlspecialchars(date(j,strtotime($f_time['finish_at']))) ?>"/>日
+			<input type="time" name="f_sche_time" step="1" value="<?php echo htmlspecialchars(date("H:i:s",strtotime($f_time['finish_at']))) ?>"/>
 			場所：
-			<input type="text" name="place" maxlength="64" value="<?php echo ($place['place']) ?>"/>
+			<input type="text" name="place" maxlength="64" value="<?php echo htmlspecialchars($place['place']) ?>"/>
 			備考：
-			<input type="text" name="remark" size="100" maxlength="128" value="<?php echo ($remark['remark']) ?>"/>
+			<input type="text" name="remark" size="100" maxlength="128" value="<?php echo htmlspecialchars($remark['remark']) ?>"/>
 
-			<input type="hidden" name="id" value="<?php echo ($id) ?>"/>
+			<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
 
 			<input type="hidden" name="result" value="1"/>
 
@@ -88,7 +88,7 @@ $remark = $cal->select_sche($id, 'remark');
 
 		</form>
 		<form method="post" action="result.php">
-			<input type="hidden" name="id" value="<?php echo ($id) ?>"/>
+			<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
 			<input type="hidden" name="result" value="2"/>
 			<input type="submit" value="削除する"/>
 		</form>

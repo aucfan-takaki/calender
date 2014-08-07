@@ -31,15 +31,15 @@ $finish_time = date("Y-m-d H:i:s", mktime(date(H,$f_time), date(i,$f_time), date
 //idがnullだったら
 if ($_POST['result'] == 0) 
 {
-	$cal->insert_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark']);
+	$cal->insert_sche(mysqli_real_escape_string($_POST['title']), mysqli_real_escape_string($start_time), mysqli_real_escape_string($finish_time), mysqli_real_escape_string($_POST['place']), mysqli_real_escape_string($_POST['remark']));
 }
 elseif ($_POST['result'] == 1) 
 {
-	$cal->update_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark'], $_POST['id']);
+	$cal->update_sche(mysqli_real_escape_string($_POST['title']), mysqli_real_escape_string($start_time), mysqli_real_escape_string($finish_time), mysqli_real_escape_string($_POST['place']), mysqli_real_escape_string($_POST['remark']), mysqli_real_escape_string($_POST['id']);
 }
 elseif ($_POST['result'] == 2) 
 {
-	$cal->delete_sche($_POST['id']);
+	$cal->delete_sche(mysqli_real_escape_string($_POST['id']));
 }
 else
 {

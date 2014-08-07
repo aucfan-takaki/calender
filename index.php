@@ -186,7 +186,7 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 					<td class="<?php echo $cal->addcolor($value['time'], $value['year'], $value['month'], $c, $holiday) ?>" align="left" valign="top">
 						<?php if($c > 0 && $c <= $cal->lastday($value['time'])) : ?>
 							<div>
-								<a href="<?php echo ('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c) ?>">
+								<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c) ?>">
 									<?php echo $c ?>
 								</a>
 					 		</div>
@@ -199,15 +199,15 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 					 			<?php echo $holiday[$cal->addholiday($value['time'], $value['year'], $value['month'], $c, $holiday)];?>
 					 		</div>
 					 		<div style="font-size: 8px">
-					 			<a href="<?php echo $auctopic[$cal->addauc($value['time'], $value['year'], $value['month'], $c, $auctopic)][0]['link'];?>">
-		                			<?php echo $auctopic[$cal->addauc($value['time'], $value['year'], $value['month'], $c, $auctopic)][0]['title'];?>
+					 			<a href="<?php echo htmlspecialchars($auctopic[$cal->addauc($value['time'], $value['year'], $value['month'], $c, $auctopic)][0]['link']);?>">
+		                			<?php echo htmlspecialchars($auctopic[$cal->addauc($value['time'], $value['year'], $value['month'], $c, $auctopic)][0]['title']);?>
 		                		</a>
 	                        </div>
 	                        <?php if (! empty($schedule[date(Ymd, mktime(0,0,0,$value['month'],$c,$value['year']))])) foreach ($schedule[date(Ymd, mktime(0,0,0,$value['month'],$c,$value['year']))] as $schedule_array) : ?>
 	                        	<?php if (!isset($schedule_array['deleted_at'])) : ?>
 		                        	<div style="font-size: 8px">
-			                        	<a href="<?php echo ('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c . '&id=' .  $schedule_array['schedule_id'] ) ?>">
-							 				<?php echo $schedule_array['title']?>
+			                        	<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c . '&id=' .  $schedule_array['schedule_id'] ) ?>">
+							 				<?php echo htmlspecialchars($schedule_array['title'])?>
 						 				</a>
 							 		</div>
 						 		<?php endif ?>
