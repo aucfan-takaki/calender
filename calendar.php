@@ -366,13 +366,23 @@ class Calendar
 
           $time = date("Y-m-d H:i:s");
 
+          $stmt = mysqli_prepare($link, 
+               "insert into schedules
+               (title, start_at, finish_at, place, remark, update_at, created_at) 
+               value
+               (?, ?, ?, ?, ?, ?, ?)"
+          );
+          mysqli_stmt_bind_param($stmt, "sssssss", $title, $start_at, $finish_at, $place, $remark, $time, $time);
+          mysqli_stmt_execute($stmt);
+          mysqli_stmt_close($stmt);
+
           //Insert
-          mysqli_query($link, 
+          /*mysqli_query($link, 
                "insert into schedules
                (title, start_at, finish_at, place, remark, update_at, created_at) 
                value 
                ('$title', '$start_at', '$finish_at', '$place', '$remark', '$time', '$time')"
-          );
+          );*/
      }
 
      public function select_sche($id, $text)
@@ -395,6 +405,8 @@ class Calendar
           {
               die('データベース選択失敗です。'.mysqli_error());
           }
+
+          $id = mysqli_real_escape_string($link,$id);
 
           $query = mysqli_query($link, 
                "select $text from schedules
@@ -426,14 +438,25 @@ class Calendar
               die('データベース選択失敗です。'.mysqli_error());
           }
 
+          $remark = mysqli_real_escape_string($link,$remark);
+
           $time = date("Y-m-d H:i:s");
 
-          mysqli_query($link, 
+          $stmt = mysqli_prepare($link, 
+               "update schedules set
+               title = ?, start_at = ?, finish_at = ?, place = ?, remark = ?, update_at = ?
+               where schedule_id = ?"
+          );
+          mysqli_stmt_bind_param($stmt, "ssssssi", $title, $start_at, $finish_at, $place, $remark, $time, $id);
+          mysqli_stmt_execute($stmt);
+          mysqli_stmt_close($stmt);
+
+          /*mysqli_query($link, 
                "update schedules set
                title = '$title', start_at = '$start_at', finish_at = '$finish_at', place = '$place', remark = '$remark', update_at = '$time'
                where schedule_id = $id"
           );
-     }
+*/     }
 
      public function delete_sche($id)
      {
@@ -458,11 +481,20 @@ class Calendar
 
           $time = date("Y-m-d H:i:s");
 
-          mysqli_query($link, 
+          $stmt = mysqli_prepare($link, 
+               "update schedules set
+               deleted_at = ?
+               where schedule_id = ?"
+          );
+          mysqli_stmt_bind_param($stmt, "si", $time, $id);
+          mysqli_stmt_execute($stmt);
+          mysqli_stmt_close($stmt);
+
+          /*mysqli_query($link, 
                "update schedules set
                deleted_at = '$time'
                where schedule_id = $id"
-          );
+          );*/
      }
 
 }

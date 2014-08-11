@@ -54,7 +54,7 @@ $remark = $cal->select_sche($id, 'remark');
 			場所：
 			<input type="text" name="place" maxlength="64"/>
 			備考：
-			<textarea name="remark" size="100" maxlength="128"></textarea>
+			<input name="remark" size="100" maxlength="128">
 
 			<input type="hidden" name="result" value="0"/>
 
