@@ -29,6 +29,16 @@ $place = $cal->select_sche($id, 'place');
 $remark = $cal->select_sche($id, 'remark');
 }
 
+$tok = new Token();
+
+session_start();
+
+$token = $tok->get_csrf_token();
+
+//var_dump($token);
+
+$_SESSION["sdata"] = $token;
+
 ?>
 
 <!DOCTYPE html>
@@ -58,6 +68,8 @@ $remark = $cal->select_sche($id, 'remark');
 
 			<input type="hidden" name="result" value="0"/>
 
+			<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
+
 			<input type="submit" value="作成する"/>
 
 		</form>
@@ -84,12 +96,17 @@ $remark = $cal->select_sche($id, 'remark');
 
 			<input type="hidden" name="result" value="1"/>
 
+			<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
+
 			<input type="submit" value="編集する"/>
 
 		</form>
 		<form method="post" action="result.php">
 			<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
 			<input type="hidden" name="result" value="2"/>
+
+			<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
+
 			<input type="submit" value="削除する"/>
 		</form>
 

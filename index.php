@@ -161,7 +161,7 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 	<input type="hidden" value=<?php echo $start_days_of_the_week ?> name="startweek">
 	<input type="submit" value="＞＞" >
 </form>
-
+ 
 <?php foreach ($year_months as $key => $value) :?>
 	<table>
 		<tr>
