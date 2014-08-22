@@ -92,6 +92,26 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 
 	.left{margin:3px; float:left;}
 	.frame{border: solid 1px;padding: 0.5em;}
+
+	.inputform
+	{
+		position:fixed;
+		top:50%;
+		left:50%;
+		height:150px;
+		width:600px;
+		margin-top:-90px;
+		margin-left:-315px;
+		background-color: #FFFFAD;
+		padding: 30px;
+		visibility: hidden;
+
+	}
+
+	.active
+	{
+		visibility: visible;
+	}
 	
 	</style>
 	<title></title>
@@ -219,5 +239,142 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 		<?php endfor ?>
 	</table>
 <?php endforeach ?>
+
+<!-- JS処理 -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+
+//alert("JSアラートテスト");
+
+$(function($)
+{
+    $.ajax({
+        type: 'GET',
+        url: "http://kensyu.aucfan.com/schedule.php",
+        dataType: "html",
+        cache: false,
+        success: function(data, status) {
+        	console.debug(data);
+            $('.popup').empty().append(data);
+            popupForm();
+        }
+    });
+ 
+    /*function popupForm()
+    {
+        $('.popup form').ajaxForm(function(res) {
+            $('.popup').empty().append(res);
+            popupForm();
+        });
+    }*/
+
+
+
+var count = 0;
+$(".button").click(function() {
+    count++;
+    $("span").text('clicks: ' + count);
+    $("#inputform").toggleClass("active");
+});
+
+
+
+
+
+
+});
+</script>
+
+<div class="inputform" id="inputform">
+	    <?php if (!isset($id)) : ?>
+			<form method="post" action="result.php">
+				<div>
+				タイトル：
+				<input type="text" name="title" maxlength="64" id="title"/>
+			</div>
+			<div>
+				予定開始時間：
+				<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo ($this_year) ?>"/>年
+				<input type="text" name="s_month" size="1" maxlength="2" value="<?php echo ($this_month) ?>"/>月
+				<input type="text" name="s_day"   size="1" maxlength="2" value="<?php echo ($this_day) ?>"/>日
+				<input type="time" name="s_sche_time" step="1" value="00:00:00"/>
+			</div>
+			<div>
+				予定終了時間：
+				<input type="text" name="f_year"  size="3" maxlength="4" value="<?php echo ($this_year) ?>"/>年
+				<input type="text" name="f_month" size="1" maxlength="2" value="<?php echo ($this_month) ?>"/>月
+				<input type="text" name="f_day"   size="1" maxlength="2" value="<?php echo ($this_day) ?>"/>日
+				<input type="time" name="f_sche_time" step="1" value="00:00:00"/>
+			</div>
+			<div>
+				場所：
+				<input type="text" name="place" maxlength="64"/>
+			</div>
+			<div>
+				備考：
+				<input name="remark" size="100" maxlength="128">
+			</div>
+
+			<input type="hidden" name="result" value="0"/>
+
+			<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
+
+			<input type="submit" value="作成する" class="button"/>
+
+			</form>
+		<?php else :?>
+			<form method="post" action="result.php">
+				<div>
+					タイトル：
+					<input type="text" name="title" maxlength="64" value="<?php echo htmlspecialchars($title['title']) ?>" id="title" />
+				</div>
+				<div>
+					予定開始時間：
+					<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo htmlspecialchars(date(Y,strtotime($s_time['start_at']))) ?>"/>年
+					<input type="text" name="s_month" size="1" maxlength="2" value="<?php echo htmlspecialchars(date(n,strtotime($s_time['start_at']))) ?>"/>月
+					<input type="text" name="s_day"   size="1" maxlength="2" value="<?php echo htmlspecialchars(date(j,strtotime($s_time['start_at']))) ?>"/>日
+					<input type="time" name="s_sche_time" step="1" value="<?php echo htmlspecialchars(date("H:i:s",strtotime($s_time['start_at']))) ?>"/>
+				</div>
+				<div>
+					予定終了時間：
+					<input type="text" name="f_year"  size="3" maxlength="4" value="<?php echo htmlspecialchars(date(Y,strtotime($f_time['finish_at']))) ?>"/>年
+					<input type="text" name="f_month" size="1" maxlength="2" value="<?php echo htmlspecialchars(date(n,strtotime($f_time['finish_at']))) ?>"/>月
+					<input type="text" name="f_day"   size="1" maxlength="2" value="<?php echo htmlspecialchars(date(j,strtotime($f_time['finish_at']))) ?>"/>日
+					<input type="time" name="f_sche_time" step="1" value="<?php echo htmlspecialchars(date("H:i:s",strtotime($f_time['finish_at']))) ?>"/>
+				</div>
+				<div>
+					場所：
+					<input type="text" name="place" maxlength="64" value="<?php echo htmlspecialchars($place['place']) ?>"/>
+				</div>
+				<div>
+					備考：
+					<input type="text" name="remark" size="100" maxlength="128" value="<?php echo htmlspecialchars($remark['remark']) ?>"/>
+				</div>
+
+				<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
+
+				<input type="hidden" name="result" value="1"/>
+
+				<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
+
+				<input type="submit" value="編集する" class="button"/>
+
+			</form>
+			<form method="post" action="result.php">
+				<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
+				<input type="hidden" name="result" value="2"/>
+
+				<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
+
+				<input type="submit" value="削除する"/>
+			</form>
+		<?php endif ?>
+</div>
+
+<button type="button">
+		<div class="button">テストボタン</div>
+</button>
+
+
 </body>
 </html>
