@@ -60,6 +60,12 @@ $auctopic = $cal->getauc();
 
 $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 
+
+
+$test = $_POST['title'];
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -206,7 +212,7 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 					<td class="<?php echo $cal->addcolor($value['time'], $value['year'], $value['month'], $c, $holiday) ?>" align="left" valign="top">
 						<?php if($c > 0 && $c <= $cal->lastday($value['time'])) : ?>
 							<div>
-								<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c) ?>">
+								<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c) ?>" class="button">
 									<?php echo $c ?>
 								</a>
 					 		</div>
@@ -226,7 +232,7 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 	                        <?php if (! empty($schedule[date(Ymd, mktime(0,0,0,$value['month'],$c,$value['year']))])) foreach ($schedule[date(Ymd, mktime(0,0,0,$value['month'],$c,$value['year']))] as $schedule_array) : ?>
 	                        	<?php if (!isset($schedule_array['deleted_at'])) : ?>
 		                        	<div style="font-size: 8px">
-			                        	<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c . '&id=' .  $schedule_array['schedule_id'] ) ?>">
+			                        	<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c . '&id=' .  $schedule_array['schedule_id'] ) ?>" class="button">
 							 				<?php echo htmlspecialchars($schedule_array['title'])?>
 						 				</a>
 							 		</div>
@@ -248,41 +254,111 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 
 $(function($)
 {
-    $.ajax({
+    
+	$.get("schedule.php?", 
+	{ 
+		year: "2015",
+		month: "08",
+		day: "31",
+		id: "19" 
+	},
+	function(data)
+	{
+	  //alert(data);
+	}
+	);
+
+
+
+    /*$.ajax({
         type: 'GET',
         url: "http://kensyu.aucfan.com/schedule.php",
         dataType: "html",
-        cache: false,
+        //cache: false,
+        
+        data:{
+        	year:,
+        	month:,
+        	day:,
+        	id:,
+
+        }
+
         success: function(data, status) {
         	console.debug(data);
             $('.popup').empty().append(data);
-            popupForm();
+           
         }
+    });*/
+
+
+    $("a").click(function(e) 
+    {
+    	var href = $(e.target).attr('href');
+    	//$($(e.target).attr('href')).show();
+    	//alert(href);
+
+    	$.get(href, function(data){
+    		var title = $(data).find('input[name=title]').val();
+    		$('#title').val(title);
+    		var title = $(data).find('input[name=s_year]').val();
+    		$('input[name=s_year]').val(title);
+    		var title = $(data).find('input[name=s_month]').val();
+    		$('input[name=s_month]').val(title);
+    		var title = $(data).find('input[name=s_day]').val();
+    		$('input[name=s_day]').val(title);
+    		var title = $(data).find('input[name=s_sche_time]').val();
+    		$('input[name=s_sche_time]').val(title);
+    		var title = $(data).find('input[name=f_year]').val();
+    		$('input[name=f_year]').val(title);
+    		var title = $(data).find('input[name=f_month]').val();
+    		$('input[name=f_month]').val(title);
+    		var title = $(data).find('input[name=f_day]').val();
+    		$('input[name=f_day]').val(title);
+    		var title = $(data).find('input[name=f_sche_time]').val();
+    		$('input[name=f_sche_time]').val(title);
+    		var title = $(data).find('input[name=place]').val();
+    		$('#place').val(title);
+    		var title = $(data).find('input[name=remark]').val();
+    		$('#remark').val(title);
+    		var jsid = $(data).find('input[name=id]').val();
+    		$('input[name=id]').val(jsid);
+
+    		console.debug(jsid);
+    	});
+    	
+
+    	//<a>をクリックしてもリンク先に飛ばない
+    	return false;
     });
  
-    /*function popupForm()
-    {
-        $('.popup form').ajaxForm(function(res) {
-            $('.popup').empty().append(res);
-            popupForm();
-        });
-    }*/
 
 
 
-var count = 0;
-$(".button").click(function() {
-    count++;
-    $("span").text('clicks: ' + count);
-    $("#inputform").toggleClass("active");
+	var count = 0;
+	//class=buttonのものをクリックした時の処理
+	$(".button").click(function(e) {
+
+	    count++;
+	    $("span").text('clicks: ' + count);
+	    $("#inputform").toggleClass("active");
+
+
+
+	    //Class=buttonを押してもURL先に飛ばない
+	    return false;
+	});
+
+
+
+
+
+
+
+
 });
 
 
-
-
-
-
-});
 </script>
 
 <div class="inputform" id="inputform">
@@ -308,18 +384,18 @@ $(".button").click(function() {
 			</div>
 			<div>
 				場所：
-				<input type="text" name="place" maxlength="64"/>
+				<input type="text" name="place" maxlength="64" id="place"/>
 			</div>
 			<div>
 				備考：
-				<input name="remark" size="100" maxlength="128">
+				<input name="remark" size="100" maxlength="128" id="remark"/>
 			</div>
 
 			<input type="hidden" name="result" value="0"/>
 
 			<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
-			<input type="submit" value="作成する" class="button"/>
+			<input type="submit" value="作成する"/>
 
 			</form>
 		<?php else :?>
@@ -344,11 +420,11 @@ $(".button").click(function() {
 				</div>
 				<div>
 					場所：
-					<input type="text" name="place" maxlength="64" value="<?php echo htmlspecialchars($place['place']) ?>"/>
+					<input type="text" name="place" maxlength="64" value="<?php echo htmlspecialchars($place['place']) ?>" id="place"/>
 				</div>
 				<div>
 					備考：
-					<input type="text" name="remark" size="100" maxlength="128" value="<?php echo htmlspecialchars($remark['remark']) ?>"/>
+					<input type="text" name="remark" size="100" maxlength="128" value="<?php echo htmlspecialchars($remark['remark']) ?>" id="remark"/>
 				</div>
 
 				<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
@@ -357,7 +433,7 @@ $(".button").click(function() {
 
 				<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
-				<input type="submit" value="編集する" class="button"/>
+				<input type="submit" value="編集する"/>
 
 			</form>
 			<form method="post" action="result.php">
@@ -374,6 +450,16 @@ $(".button").click(function() {
 <button type="button">
 		<div class="button">テストボタン</div>
 </button>
+
+
+
+
+<form method="post" action="index.php">
+	<input type="text" name="title" value="hogehoge"/>
+	<input type="submit" value="ポストテスト"/>
+</form>
+ポストテスト結果：<?php var_dump($test);?>
+
 
 
 </body>

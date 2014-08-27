@@ -506,7 +506,7 @@ class Token
           $TOKEN_LENGTH = 16;
           $bytes = openssl_random_pseudo_bytes($TOKEN_LENGTH);
 
-          // ↓?
+          // ?
           $_SESSION['csrf_tokens'][$bytes] = ture;
 
           return bin2hex($bytes);

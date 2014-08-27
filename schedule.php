@@ -52,7 +52,7 @@ $_SESSION["sdata"] = $token;
 			<div>
 				タイトル：
 				<input type="text" name="title" maxlength="64" id="title"/>
-			</div>
+			<div>
 			<div>
 				予定開始時間：
 				<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo ($this_year) ?>"/>年
@@ -133,7 +133,7 @@ $_SESSION["sdata"] = $token;
 	<?php endif ?>
 
 
-	<!-- <button type="button">
+	<!--  <button type="button">
 		<div class="button">テストボタン</div>
 	</button>
 	
