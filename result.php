@@ -1,5 +1,4 @@
 <?php
-
 require_once dirname(__FILE__). '/calendar.php';
 
 
@@ -65,10 +64,14 @@ echo"不正なセッションです";
 
 }
 
+
+//自動で戻る
+header("Location: ./index.php");
+
 ?>
 
 
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
 	<title></title>
@@ -80,5 +83,5 @@ echo"不正なセッションです";
 		</a>
 	</button>
 </body>
-</html>
+</html> -->
 

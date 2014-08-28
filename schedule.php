@@ -31,13 +31,15 @@ $remark = $cal->select_sche($id, 'remark');
 
 $tok = new Token();
 
-session_start();
+
+//sessionはindexへ
+/*session_start();
 
 $token = $tok->get_csrf_token();
 
 //var_dump($token);
 
-$_SESSION["sdata"] = $token;
+$_SESSION["sdata"] = $token;*/
 
 ?>
 

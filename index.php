@@ -65,6 +65,18 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 $test = $_POST['title'];
 
 
+//トークン
+$tok = new Token();
+
+session_start();
+
+$token = $tok->get_csrf_token();
+
+$_SESSION["sdata"] = $token;
+
+//echo $token;
+
+
 
 ?>
 
@@ -292,6 +304,10 @@ $(function($)
     });*/
 
 
+
+
+
+
     $("a").click(function(e) 
     {
     	var href = $(e.target).attr('href');
@@ -299,39 +315,56 @@ $(function($)
     	//alert(href);
 
     	$.get(href, function(data){
-    		var title = $(data).find('input[name=title]').val();
-    		$('#title').val(title);
-    		var title = $(data).find('input[name=s_year]').val();
-    		$('input[name=s_year]').val(title);
-    		var title = $(data).find('input[name=s_month]').val();
-    		$('input[name=s_month]').val(title);
-    		var title = $(data).find('input[name=s_day]').val();
-    		$('input[name=s_day]').val(title);
-    		var title = $(data).find('input[name=s_sche_time]').val();
-    		$('input[name=s_sche_time]').val(title);
-    		var title = $(data).find('input[name=f_year]').val();
-    		$('input[name=f_year]').val(title);
-    		var title = $(data).find('input[name=f_month]').val();
-    		$('input[name=f_month]').val(title);
-    		var title = $(data).find('input[name=f_day]').val();
-    		$('input[name=f_day]').val(title);
-    		var title = $(data).find('input[name=f_sche_time]').val();
-    		$('input[name=f_sche_time]').val(title);
-    		var title = $(data).find('input[name=place]').val();
-    		$('#place').val(title);
-    		var title = $(data).find('input[name=remark]').val();
-    		$('#remark').val(title);
+    		var jstitle = $(data).find('input[name=title]').val();
+    		$('#title').val(jstitle);
+    		var jss_year = $(data).find('input[name=s_year]').val();
+    		$('input[name=s_year]').val(jss_year);
+    		var jss_month = $(data).find('input[name=s_month]').val();
+    		$('input[name=s_month]').val(jss_month);
+    		var jss_day = $(data).find('input[name=s_day]').val();
+    		$('input[name=s_day]').val(jss_day);
+    		var jss_sche_time = $(data).find('input[name=s_sche_time]').val();
+    		$('input[name=s_sche_time]').val(jss_sche_time);
+    		var jsf_year = $(data).find('input[name=f_year]').val();
+    		$('input[name=f_year]').val(jsf_year);
+    		var jsf_month = $(data).find('input[name=f_month]').val();
+    		$('input[name=f_month]').val(jsf_month);
+    		var jsf_day = $(data).find('input[name=f_day]').val();
+    		$('input[name=f_day]').val(jsf_day);
+    		var jsf_sche_time = $(data).find('input[name=f_sche_time]').val();
+    		$('input[name=f_sche_time]').val(jsf_sche_time);
+    		var jsplace = $(data).find('input[name=place]').val();
+    		$('#place').val(jsplace);
+    		var jsremark = $(data).find('input[name=remark]').val();
+    		$('#remark').val(jsremark);
     		var jsid = $(data).find('input[name=id]').val();
     		$('input[name=id]').val(jsid);
 
     		console.debug(jsid);
+    		
+    		if(typeof jsid === 'undefined'){
+				//$("#delete").toggleClass("inactive");
+				$('.edit').css('display','none');
+				$('.new').css('display','');
+			}
+			else
+			{
+				$('.edit').css('display','');
+				$('.new').css('display','none');
+			}
+
     	});
     	
+
+	
+
 
     	//<a>をクリックしてもリンク先に飛ばない
     	return false;
     });
  
+	
+	
 
 
 
@@ -343,6 +376,10 @@ $(function($)
 	    $("span").text('clicks: ' + count);
 	    $("#inputform").toggleClass("active");
 
+
+
+
+	    
 
 
 	    //Class=buttonを押してもURL先に飛ばない
@@ -362,104 +399,97 @@ $(function($)
 </script>
 
 <div class="inputform" id="inputform">
-	    <?php if (!isset($id)) : ?>
-			<form method="post" action="result.php">
-				<div>
-				タイトル：
-				<input type="text" name="title" maxlength="64" id="title"/>
-			</div>
-			<div>
-				予定開始時間：
-				<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo ($this_year) ?>"/>年
-				<input type="text" name="s_month" size="1" maxlength="2" value="<?php echo ($this_month) ?>"/>月
-				<input type="text" name="s_day"   size="1" maxlength="2" value="<?php echo ($this_day) ?>"/>日
-				<input type="time" name="s_sche_time" step="1" value="00:00:00"/>
-			</div>
-			<div>
-				予定終了時間：
-				<input type="text" name="f_year"  size="3" maxlength="4" value="<?php echo ($this_year) ?>"/>年
-				<input type="text" name="f_month" size="1" maxlength="2" value="<?php echo ($this_month) ?>"/>月
-				<input type="text" name="f_day"   size="1" maxlength="2" value="<?php echo ($this_day) ?>"/>日
-				<input type="time" name="f_sche_time" step="1" value="00:00:00"/>
-			</div>
-			<div>
-				場所：
-				<input type="text" name="place" maxlength="64" id="place"/>
-			</div>
-			<div>
-				備考：
-				<input name="remark" size="100" maxlength="128" id="remark"/>
-			</div>
+	    
+	<form method="post" action="result.php" class="new">
+		<div>
+		タイトル：
+		<input type="text" name="title" maxlength="64"/>
+	</div>
+	<div>
+		予定開始時間：
+		<input type="text" name="s_year"  size="3" maxlength="4" />年
+		<input type="text" name="s_month" size="1" maxlength="2" />月
+		<input type="text" name="s_day"   size="1" maxlength="2" />日
+		<input type="time" name="s_sche_time" step="1" />
+	</div>
+	<div>
+		予定終了時間：
+		<input type="text" name="f_year"  size="3" maxlength="4" />年
+		<input type="text" name="f_month" size="1" maxlength="2" />月
+		<input type="text" name="f_day"   size="1" maxlength="2" />日
+		<input type="time" name="f_sche_time" step="1" />
+	</div>
+	<div>
+		場所：
+		<input type="text" name="place" maxlength="64"/>
+	</div>
+	<div>
+		備考：
+		<input name="remark" size="100" maxlength="128"/>
+	</div>
 
-			<input type="hidden" name="result" value="0"/>
 
-			<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
-			<input type="submit" value="作成する"/>
+	<input type="hidden" name="result" value="0"/>
 
-			</form>
-		<?php else :?>
-			<form method="post" action="result.php">
-				<div>
-					タイトル：
-					<input type="text" name="title" maxlength="64" value="<?php echo htmlspecialchars($title['title']) ?>" id="title" />
-				</div>
-				<div>
-					予定開始時間：
-					<input type="text" name="s_year"  size="3" maxlength="4" value="<?php echo htmlspecialchars(date(Y,strtotime($s_time['start_at']))) ?>"/>年
-					<input type="text" name="s_month" size="1" maxlength="2" value="<?php echo htmlspecialchars(date(n,strtotime($s_time['start_at']))) ?>"/>月
-					<input type="text" name="s_day"   size="1" maxlength="2" value="<?php echo htmlspecialchars(date(j,strtotime($s_time['start_at']))) ?>"/>日
-					<input type="time" name="s_sche_time" step="1" value="<?php echo htmlspecialchars(date("H:i:s",strtotime($s_time['start_at']))) ?>"/>
-				</div>
-				<div>
-					予定終了時間：
-					<input type="text" name="f_year"  size="3" maxlength="4" value="<?php echo htmlspecialchars(date(Y,strtotime($f_time['finish_at']))) ?>"/>年
-					<input type="text" name="f_month" size="1" maxlength="2" value="<?php echo htmlspecialchars(date(n,strtotime($f_time['finish_at']))) ?>"/>月
-					<input type="text" name="f_day"   size="1" maxlength="2" value="<?php echo htmlspecialchars(date(j,strtotime($f_time['finish_at']))) ?>"/>日
-					<input type="time" name="f_sche_time" step="1" value="<?php echo htmlspecialchars(date("H:i:s",strtotime($f_time['finish_at']))) ?>"/>
-				</div>
-				<div>
-					場所：
-					<input type="text" name="place" maxlength="64" value="<?php echo htmlspecialchars($place['place']) ?>" id="place"/>
-				</div>
-				<div>
-					備考：
-					<input type="text" name="remark" size="100" maxlength="128" value="<?php echo htmlspecialchars($remark['remark']) ?>" id="remark"/>
-				</div>
+	<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
-				<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
+	<input type="submit" value="作成する" style="margin:0px; float:left;"/>
 
-				<input type="hidden" name="result" value="1"/>
+	</form>
 
-				<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
-				<input type="submit" value="編集する"/>
 
-			</form>
-			<form method="post" action="result.php">
-				<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
-				<input type="hidden" name="result" value="2"/>
+	<form method="post" action="result.php" class="edit" >
+		<div>
+		タイトル：
+		<input type="text" name="title" maxlength="64" id="title"/>
+	</div>
+	<div>
+		予定開始時間：
+		<input type="text" name="s_year"  size="3" maxlength="4" />年
+		<input type="text" name="s_month" size="1" maxlength="2" />月
+		<input type="text" name="s_day"   size="1" maxlength="2" />日
+		<input type="time" name="s_sche_time" step="1" />
+	</div>
+	<div>
+		予定終了時間：
+		<input type="text" name="f_year"  size="3" maxlength="4" />年
+		<input type="text" name="f_month" size="1" maxlength="2" />月
+		<input type="text" name="f_day"   size="1" maxlength="2" />日
+		<input type="time" name="f_sche_time" step="1" />
+	</div>
+	<div>
+		場所：
+		<input type="text" name="place" maxlength="64" id="place"/>
+	</div>
+	<div>
+		備考：
+		<input name="remark" size="100" maxlength="128" id="remark"/>
+	</div>	
 
-				<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
+		<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
 
-				<input type="submit" value="削除する"/>
-			</form>
-		<?php endif ?>
+		<input type="hidden" name="result" value="1"/>
+
+		<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
+
+		<input type="submit" value="編集する" style="margin:0px; float:left;"/>
+
+	</form>
+	<form method="post" action="result.php" class="edit">
+		<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
+		<input type="hidden" name="result" value="2"/>
+
+		<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
+
+		<input type="submit" value="削除する" style="margin:0px; float:left;"/>
+	</form>
+
+		<form>
+		<input type="button" value="閉じる" class="button" style="margin:0px; float:left;"/>
+		</form>
 </div>
-
-<button type="button">
-		<div class="button">テストボタン</div>
-</button>
-
-
-
-
-<form method="post" action="index.php">
-	<input type="text" name="title" value="hogehoge"/>
-	<input type="submit" value="ポストテスト"/>
-</form>
-ポストテスト結果：<?php var_dump($test);?>
-
 
 
 </body>
