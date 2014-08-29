@@ -224,7 +224,7 @@ $_SESSION["sdata"] = $token;
 					<td class="<?php echo $cal->addcolor($value['time'], $value['year'], $value['month'], $c, $holiday) ?>" align="left" valign="top">
 						<?php if($c > 0 && $c <= $cal->lastday($value['time'])) : ?>
 							<div>
-								<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c) ?>" class="button">
+								<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c) ?>" class="schedule">
 									<?php echo $c ?>
 								</a>
 					 		</div>
@@ -244,7 +244,7 @@ $_SESSION["sdata"] = $token;
 	                        <?php if (! empty($schedule[date(Ymd, mktime(0,0,0,$value['month'],$c,$value['year']))])) foreach ($schedule[date(Ymd, mktime(0,0,0,$value['month'],$c,$value['year']))] as $schedule_array) : ?>
 	                        	<?php if (!isset($schedule_array['deleted_at'])) : ?>
 		                        	<div style="font-size: 8px">
-			                        	<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c . '&id=' .  $schedule_array['schedule_id'] ) ?>" class="button">
+			                        	<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c . '&id=' .  $schedule_array['schedule_id'] ) ?>" class="schedule">
 							 				<?php echo htmlspecialchars($schedule_array['title'])?>
 						 				</a>
 							 		</div>
@@ -268,17 +268,11 @@ $(function($)
 {
     
 	$.get("schedule.php?", 
-	{ 
-		year: "2015",
-		month: "08",
-		day: "31",
-		id: "19" 
-	},
+	
 	function(data)
 	{
 	  //alert(data);
-	}
-	);
+	});
 
 
 
@@ -306,9 +300,9 @@ $(function($)
 
 
 
+	var count = 0;
 
-
-    $("a").click(function(e) 
+    $(".schedule").click(function(e) 
     {
     	var href = $(e.target).attr('href');
     	//$($(e.target).attr('href')).show();
@@ -354,36 +348,77 @@ $(function($)
 			}
 
     	});
-    	
-
-	
 
 
-    	//<a>をクリックしてもリンク先に飛ばない
+
+		count++;
+	    $("span").text('clicks: ' + count);
+	    $("#inputform").addClass("active");
+
+	    
+    	//クリックしてもリンク先に飛ばない
     	return false;
     });
  
 	
-	
+
+	$(".register").click(function(e) {
+		var result_type =  $(e.target).attr('id');
+		if (result_type == 1) {
+                                   	var title_type = $('#title1').val();
+                                   	var place_type = $('#place1').val();
+                                   	var remark_type = $('#remark1').val();
+                               	   }
+                               	   else
+                               	   {
+                               	   	var title_type = $('#title').val();
+                                   	var place_type = $('#place').val();
+                                   	var remark_type = $('#remark').val();
+                               	   }
+
+		var post_vars = {
+                                   title: title_type,
+                                   place: place_type,
+                                   remark: remark_type,
+
+                                   s_year: $('input[name=s_year]').val(),
+                                   s_month: $('input[name=s_month]').val(),
+                                   s_day: $('input[name=s_day]').val(),
+                                   s_sche_time: $('input[name=s_sche_time]').val(),
+                                   f_year: $('input[name=f_year]').val(),
+                                   f_month: $('input[name=f_month]').val(),
+                                   f_day: $('input[name=f_day]').val(),
+                                   f_sche_time: $('input[name=f_sche_time]').val(),
+                                   id: $('input[name=id]').val(),
+                                   result: result_type, //typeof jsid === 'undefined' ? 0 : 1,//$('input[name=result]').val(),
+                                   csrf_token: '<?php echo "$token";?>',
+                        };
+       /*if() {
+       		post_vars.id = $("").val();
+       }*/
+
+		$.ajax({
+                    type     : 'POST',
+                    dataType : 'text',
+                    url      : 'result.php',
+                    data     : post_vars
+                }).done(function(data) {
+                    // ajax ok
+                    //$("#disp_area").html(data);
+                    $("#inputform").removeClass("active");
+                }).fail(function(data) {
+                    // ajax error
+                    $("#disp_area").html('Error');
+                }).always(function(data) {
+                    // ajax complete
+                });
 
 
 
-	var count = 0;
-	//class=buttonのものをクリックした時の処理
-	$(".button").click(function(e) {
 
-	    count++;
-	    $("span").text('clicks: ' + count);
-	    $("#inputform").toggleClass("active");
-
-
-
-
-	    
-
-
-	    //Class=buttonを押してもURL先に飛ばない
+	    //URL先に飛ばない
 	    return false;
+
 	});
 
 
@@ -403,38 +438,36 @@ $(function($)
 	<form method="post" action="result.php" class="new">
 		<div>
 		タイトル：
-		<input type="text" name="title" maxlength="64"/>
-	</div>
-	<div>
-		予定開始時間：
-		<input type="text" name="s_year"  size="3" maxlength="4" />年
-		<input type="text" name="s_month" size="1" maxlength="2" />月
-		<input type="text" name="s_day"   size="1" maxlength="2" />日
-		<input type="time" name="s_sche_time" step="1" />
-	</div>
-	<div>
-		予定終了時間：
-		<input type="text" name="f_year"  size="3" maxlength="4" />年
-		<input type="text" name="f_month" size="1" maxlength="2" />月
-		<input type="text" name="f_day"   size="1" maxlength="2" />日
-		<input type="time" name="f_sche_time" step="1" />
-	</div>
-	<div>
-		場所：
-		<input type="text" name="place" maxlength="64"/>
-	</div>
-	<div>
-		備考：
-		<input name="remark" size="100" maxlength="128"/>
-	</div>
+		<input type="text" name="title" maxlength="64" id="title1"/>
+		</div>
+		<div>
+			予定開始時間：
+			<input type="text" name="s_year"  size="3" maxlength="4" />年
+			<input type="text" name="s_month" size="1" maxlength="2" />月
+			<input type="text" name="s_day"   size="1" maxlength="2" />日
+			<input type="time" name="s_sche_time" step="1" />
+		</div>
+		<div>
+			予定終了時間：
+			<input type="text" name="f_year"  size="3" maxlength="4" />年
+			<input type="text" name="f_month" size="1" maxlength="2" />月
+			<input type="text" name="f_day"   size="1" maxlength="2" />日
+			<input type="time" name="f_sche_time" step="1" />
+		</div>
+		<div>
+			場所：
+			<input type="text" name="place" maxlength="64" id="place1"/>
+		</div>
+		<div>
+			備考：
+			<input name="remark" size="100" maxlength="128" id="remark1"/>
+		</div>
 
+		<input type="hidden" name="result" value="0"/>
 
+		<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
-	<input type="hidden" name="result" value="0"/>
-
-	<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
-
-	<input type="submit" value="作成する" style="margin:0px; float:left;"/>
+		<input type="submit" value="作成する" style="margin:0px; float:left;" class="register" id="1"/>
 
 	</form>
 
@@ -444,29 +477,29 @@ $(function($)
 		<div>
 		タイトル：
 		<input type="text" name="title" maxlength="64" id="title"/>
-	</div>
-	<div>
-		予定開始時間：
-		<input type="text" name="s_year"  size="3" maxlength="4" />年
-		<input type="text" name="s_month" size="1" maxlength="2" />月
-		<input type="text" name="s_day"   size="1" maxlength="2" />日
-		<input type="time" name="s_sche_time" step="1" />
-	</div>
-	<div>
-		予定終了時間：
-		<input type="text" name="f_year"  size="3" maxlength="4" />年
-		<input type="text" name="f_month" size="1" maxlength="2" />月
-		<input type="text" name="f_day"   size="1" maxlength="2" />日
-		<input type="time" name="f_sche_time" step="1" />
-	</div>
-	<div>
-		場所：
-		<input type="text" name="place" maxlength="64" id="place"/>
-	</div>
-	<div>
-		備考：
-		<input name="remark" size="100" maxlength="128" id="remark"/>
-	</div>	
+		</div>
+		<div>
+			予定開始時間：
+			<input type="text" name="s_year"  size="3" maxlength="4" />年
+			<input type="text" name="s_month" size="1" maxlength="2" />月
+			<input type="text" name="s_day"   size="1" maxlength="2" />日
+			<input type="time" name="s_sche_time" step="1" />
+		</div>
+		<div>
+			予定終了時間：
+			<input type="text" name="f_year"  size="3" maxlength="4" />年
+			<input type="text" name="f_month" size="1" maxlength="2" />月
+			<input type="text" name="f_day"   size="1" maxlength="2" />日
+			<input type="time" name="f_sche_time" step="1" />
+		</div>
+		<div>
+			場所：
+			<input type="text" name="place" maxlength="64" id="place"/>
+		</div>
+		<div>
+			備考：
+			<input name="remark" size="100" maxlength="128" id="remark"/>
+		</div>	
 
 		<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
 
@@ -474,7 +507,7 @@ $(function($)
 
 		<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
-		<input type="submit" value="編集する" style="margin:0px; float:left;"/>
+		<input type="submit" value="編集する" style="margin:0px; float:left;" class="register" id="2"/>
 
 	</form>
 	<form method="post" action="result.php" class="edit">
@@ -483,11 +516,11 @@ $(function($)
 
 		<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
-		<input type="submit" value="削除する" style="margin:0px; float:left;"/>
+		<input type="submit" value="削除する" style="margin:0px; float:left;" class="register" id="3"/>
 	</form>
 
 		<form>
-		<input type="button" value="閉じる" class="button" style="margin:0px; float:left;"/>
+		<input type="button" value="閉じる" class="schedule" style="margin:0px; float:left;"/>
 		</form>
 </div>
 

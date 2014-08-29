@@ -9,7 +9,7 @@ session_start();
 //echo "セッションデータ：" , $_SESSION["sdata"];
 //echo "ポストデータ：" , $_POST["csrf_token"];
 
-if ($_SESSION["sdata"] == $_POST["csrf_token"]) 
+if ($_POST["csrf_token"] == $_SESSION["sdata"] ) 
 {
 	//年月を取得、nullの場合は今月の値
 	$this_year = $_GET["year"];
@@ -21,7 +21,7 @@ if ($_SESSION["sdata"] == $_POST["csrf_token"])
 
 	$cal = new Calendar($target_time);
 
-	if (!($_POST['result'] == 2)) 
+	if (!($_POST['result'] == 3)) 
 	{
 
 		$s_time = str_replace(":", ",", strtotime($_POST['s_sche_time']));
@@ -39,15 +39,15 @@ if ($_SESSION["sdata"] == $_POST["csrf_token"])
 	}
 
 	//idがnullだったら
-	if ($_POST['result'] == 0) 
+	if ($_POST['result'] == 1) 
 	{
 		$cal->insert_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark']);
 	}
-	elseif ($_POST['result'] == 1) 
+	elseif ($_POST['result'] == 2) 
 	{
 		$cal->update_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark'], $_POST['id']);
 	}
-	elseif ($_POST['result'] == 2) 
+	elseif ($_POST['result'] == 3) 
 	{
 		$cal->delete_sche($_POST['id']);
 	}
@@ -66,7 +66,7 @@ echo"不正なセッションです";
 
 
 //自動で戻る
-header("Location: ./index.php");
+//header("Location: ./index.php");
 
 ?>
 

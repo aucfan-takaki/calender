@@ -78,7 +78,7 @@ $_SESSION["sdata"] = $token;*/
 				<input name="remark" size="100" maxlength="128">
 			</div>
 
-			<input type="hidden" name="result" value="0"/>
+			<input type="hidden" name="result" value="1"/>
 
 			<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
@@ -116,7 +116,7 @@ $_SESSION["sdata"] = $token;*/
 
 			<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
 
-			<input type="hidden" name="result" value="1"/>
+			<input type="hidden" name="result" value="2"/>
 
 			<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
@@ -125,7 +125,7 @@ $_SESSION["sdata"] = $token;*/
 		</form>
 		<form method="post" action="result.php">
 			<input type="hidden" name="id" value="<?php echo htmlspecialchars($id) ?>"/>
-			<input type="hidden" name="result" value="2"/>
+			<input type="hidden" name="result" value="3"/>
 
 			<input type="hidden" name="csrf_token" value="<?php echo $token ?>"/>
 
