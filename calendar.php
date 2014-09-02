@@ -374,6 +374,7 @@ class Calendar
           );
           mysqli_stmt_bind_param($stmt, "sssssss", $title, $start_at, $finish_at, $place, $remark, $time, $time);
           mysqli_stmt_execute($stmt);
+          $lastid = mysqli_insert_id($link);
           mysqli_stmt_close($stmt);
 
           //Insert
@@ -383,6 +384,7 @@ class Calendar
                value 
                ('$title', '$start_at', '$finish_at', '$place', '$remark', '$time', '$time')"
           );*/
+          return $lastid;
      }
 
      public function select_sche($id, $text)
@@ -449,14 +451,16 @@ class Calendar
           );
           mysqli_stmt_bind_param($stmt, "ssssssi", $title, $start_at, $finish_at, $place, $remark, $time, $id);
           mysqli_stmt_execute($stmt);
+          $lastid = mysqli_insert_id($link);
           mysqli_stmt_close($stmt);
 
           /*mysqli_query($link, 
                "update schedules set
                title = '$title', start_at = '$start_at', finish_at = '$finish_at', place = '$place', remark = '$remark', update_at = '$time'
                where schedule_id = $id"
-          );
-*/     }
+          );*/
+          return $lastid;
+     }
 
      public function delete_sche($id)
      {
@@ -496,6 +500,72 @@ class Calendar
                where schedule_id = $id"
           );*/
      }
+
+
+     public function last_update()
+     {
+          $url = 'localhost';
+          $user = 'root';
+          $pass  ='';
+
+          //MySQLに接続
+          $link = mysqli_connect($url, $user, $pass);
+
+          //接続状態チェック
+          if (mysqli_connect_errno()) 
+          {
+               echo '接続に失敗しました';
+          }
+
+          $db_selected = mysqli_select_db($link, 'calendar');
+          if (!$db_selected)
+          {
+              die('データベース選択失敗です。'.mysqli_error());
+          }
+
+          $query = mysqli_query($link, 
+               "select * from schedules
+               order by update_at desc limit 1"
+          );
+
+          return mysqli_fetch_assoc($query);
+     }
+
+
+     public function last_id()
+     {
+          $url = 'localhost';
+          $user = 'root';
+          $pass  ='';
+
+          //MySQLに接続
+          $link = mysqli_connect($url, $user, $pass);
+
+          //接続状態チェック
+          if (mysqli_connect_errno()) 
+          {
+               echo '接続に失敗しました';
+          }
+
+          $db_selected = mysqli_select_db($link, 'calendar');
+          if (!$db_selected)
+          {
+              die('データベース選択失敗です。'.mysqli_error());
+          }
+
+          return mysqli_insert_id();
+     }
+
+
+     public function date_id($year, $month, $day)
+     {
+
+          return date(Ymd, mktime(0, 0, 0, $month, $day, $year));
+
+     }
+
+
+
 
 }
 

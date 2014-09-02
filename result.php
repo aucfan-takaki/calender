@@ -41,11 +41,13 @@ if ($_POST["csrf_token"] == $_SESSION["sdata"] )
 	//idがnullだったら
 	if ($_POST['result'] == 1) 
 	{
-		$cal->insert_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark']);
+		$test = $cal->insert_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark']);
+
 	}
 	elseif ($_POST['result'] == 2) 
 	{
 		$cal->update_sche($_POST['title'], $start_time, $finish_time, $_POST['place'], $_POST['remark'], $_POST['id']);
+		
 	}
 	elseif ($_POST['result'] == 3) 
 	{
@@ -71,17 +73,12 @@ echo"不正なセッションです";
 ?>
 
 
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 	<title></title>
 </head>
 <body>
-	<button type="button">
-		<a href="http://kensyu.aucfan.com/index.php">
-			カレンダーへ戻る	
-		</a>
-	</button>
+	<?php echo($test) ;?>
 </body>
-</html> -->
-
+</html>
