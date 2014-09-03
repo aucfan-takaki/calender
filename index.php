@@ -305,6 +305,7 @@ $(function($)
 	$("body").on("click", ".schedule",function(e) 
     {
 		ac_sche = $(e.target);
+    
     	//クリックしたURL先を取得
     	var href = $(e.target).attr('href');
     	//$($(e.target).attr('href')).show();
@@ -442,13 +443,20 @@ $(function($)
                     s_id = Number($(data).text());
                     };
 
-                    var search_id = "." + (regi_year * 10000 + regi_month * 100 + regi_day * 1);
-				    //var a_tag = $('<a></a>').attr("href", 'http://kensyu.aucfan.com/schedule.php?year=' + regi_year + '&month=' + regi_month + '&day=' + regi_day + '&id=' + id);
-				    //$(search_id).append('<div></div>').append(a_tag);
-				    var url = 'http://kensyu.aucfan.com/schedule.php?year=' + regi_year + '&month=' + regi_month + '&day=' + regi_day + '&id=' + s_id ;
-				    $(search_id).append("<div style='font-size: 8px'><a href=" + url + " class=\"schedule\">" + title_type + "</a></div>");
-    				
+
+                	if (result_type != 3) 
+                	{
+	                    var search_id = "." + (regi_year * 10000 + regi_month * 100 + regi_day * 1);
+					    //var a_tag = $('<a></a>').attr("href", 'http://kensyu.aucfan.com/schedule.php?year=' + regi_year + '&month=' + regi_month + '&day=' + regi_day + '&id=' + id);
+					    //$(search_id).append('<div></div>').append(a_tag);
+					    var url = 'http://kensyu.aucfan.com/schedule.php?year=' + regi_year + '&month=' + regi_month + '&day=' + regi_day + '&id=' + s_id ;
+					    $(search_id).append("<div style='font-size: 8px'><a href=" + url + " class=\"schedule\">" + title_type + "</a></div>");
+    				};
+
+    				if (result_type != 1) 
+    				{
     				ac_sche.remove();
+    				};
 
                     $("#inputform").removeClass("active");
                 }).fail(function(data) {
