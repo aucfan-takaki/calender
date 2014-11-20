@@ -289,9 +289,6 @@ class Calendar
           //予定取得終了日
           $finish_date = date('Y-m-d H:i:s', strtotime($nmonth . ' month' . '-1 second', $target_time ));
 
-          //var_dump($start_date);
-          //var_dump($finish_date);
-
           $url = 'localhost';
           $user = 'root';
           $pass  ='';
@@ -310,9 +307,6 @@ class Calendar
           {
               die('データベース選択失敗です。'.mysqli_error());
           }
-
-          //Insertテスト
-          //mysqli_query($link, "insert into schedules (title) value ('testphpinsert')");
           
           $result = mysqli_query($link, 'select * from schedules');
           if (!$result) 
@@ -320,22 +314,13 @@ class Calendar
               die('クエリーが失敗しました。'.mysqli_error());
           }
 
-          //var_dump(mysqli_fetch_assoc($result));
-
-          //exit;
-
           while ($row = mysqli_fetch_assoc($result))
           {
-               //var_dump($row["title"]);
 
                $start = date("Ymd", strtotime($row["start_at"]));
 
                $sche[$start][] = $row;
 
-               /*$sche[$start] = array
-               (
-                    'title' => (string)$row['title'],
-               );*/
           }
 
           return $sche;
@@ -377,13 +362,6 @@ class Calendar
           $lastid = mysqli_insert_id($link);
           mysqli_stmt_close($stmt);
 
-          //Insert
-          /*mysqli_query($link, 
-               "insert into schedules
-               (title, start_at, finish_at, place, remark, update_at, created_at) 
-               value 
-               ('$title', '$start_at', '$finish_at', '$place', '$remark', '$time', '$time')"
-          );*/
           return $lastid;
      }
 
@@ -454,11 +432,6 @@ class Calendar
           $lastid = mysqli_insert_id($link);
           mysqli_stmt_close($stmt);
 
-          /*mysqli_query($link, 
-               "update schedules set
-               title = '$title', start_at = '$start_at', finish_at = '$finish_at', place = '$place', remark = '$remark', update_at = '$time'
-               where schedule_id = $id"
-          );*/
           return $lastid;
      }
 
@@ -494,11 +467,6 @@ class Calendar
           mysqli_stmt_execute($stmt);
           mysqli_stmt_close($stmt);
 
-          /*mysqli_query($link, 
-               "update schedules set
-               deleted_at = '$time'
-               where schedule_id = $id"
-          );*/
      }
 
 
@@ -563,9 +531,6 @@ class Calendar
           return date(Ymd, mktime(0, 0, 0, $month, $day, $year));
 
      }
-
-
-
 
 }
 

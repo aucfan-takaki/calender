@@ -31,16 +31,6 @@ $remark = $cal->select_sche($id, 'remark');
 
 $tok = new Token();
 
-
-//sessionはindexへ
-/*session_start();
-
-$token = $tok->get_csrf_token();
-
-//var_dump($token);
-
-$_SESSION["sdata"] = $token;*/
-
 ?>
 
 <!DOCTYPE html>
@@ -134,13 +124,6 @@ $_SESSION["sdata"] = $token;*/
 
 	<?php endif ?>
 
-
-	<!--  <button type="button">
-		<div class="button">テストボタン</div>
-	</button>
-	
-	 <span class="count">0</count> -->
-
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script>
 		//
@@ -172,12 +155,6 @@ $_SESSION["sdata"] = $token;*/
 
 
 			});
-
-			//title文字数カウント
-		    /*$('#title').bind('keyup',function(){
-		        var thisValueLength = $(this).val().length;
-		        $('.count').html(thisValueLength);
-		    });*/
 
 		});
 

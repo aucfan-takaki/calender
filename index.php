@@ -1,5 +1,6 @@
 <?php
 
+//関数を書いてるファイルを読み込む
 require_once dirname(__FILE__). '/calendar.php';
 
 //年月を取得、nullの場合は今月の値
@@ -8,9 +9,10 @@ $this_month= $_GET["month"];
 if (empty($this_year)) $this_year   = date(Y);
 if (empty($this_month)) $this_month = date(m);
 
+//基準となる時間のタイムスタンプを作成
 $target_time = mktime(0,0,0,$this_month,1,$this_year);
 
-
+//関数を読み込む
 $cal = new Calendar($target_time);
 
 //表示させるカレンダーの数を取得	、nullの場合は3
@@ -56,8 +58,10 @@ $finish_holiday = date('Y-m-d',$cal->jumptime($nmonth+1, $target_time));
 //祝日を取得
 $holiday = $cal->getHolidays($start_holiday, $finish_holiday);
 
+//オクトピを[日付][記事数][タイトルorURL]で取得
 $auctopic = $cal->getauc();
 
+//データベース取得
 $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 
 
@@ -65,13 +69,16 @@ $schedule = $cal->getdb($target_time, $pmonth, $nmonth+1);
 $test = $_POST['title'];
 
 
-//トークン
+//トークンに関する関数を読み込み
 $tok = new Token();
 
+//セッション	
 session_start();
 
+//16文字のトークンを作成
 $token = $tok->get_csrf_token();
 
+//セッションでトークンの値を送信
 $_SESSION["sdata"] = $token;
 
 //echo $token;
@@ -274,32 +281,6 @@ $(function($)
 	  //alert(data);
 	});
 
-
-
-    /*$.ajax({
-        type: 'GET',
-        url: "http://kensyu.aucfan.com/schedule.php",
-        dataType: "html",
-        //cache: false,
-        
-        data:{
-        	year:,
-        	month:,
-        	day:,
-        	id:,
-
-        }
-
-        success: function(data, status) {
-        	console.debug(data);
-            $('.popup').empty().append(data);
-           
-        }
-    });*/
-
-
-
-
 	var count = 0;
 
 	$("body").on("click", ".schedule",function(e) 
@@ -354,8 +335,6 @@ $(function($)
 
     	});
 
-
-
 		count++;
 	    $("span").text('clicks: ' + count);
 	    $("#inputform").addClass("active");
@@ -365,37 +344,15 @@ $(function($)
     	return false;
     });
 
-
-
 	$("#close").click(function(e) 
     {
 		$("#inputform").removeClass("active");
     });
 
- 
-	
-
 	$(".register").click(function(e) {
 		var result_type =  $(e.target).attr('id');
 		$form = result_type == 1 ? $('form.new') : $('form.edit');
 
-		//$form.find('input[name=.....]').val();
-
-		/*if (result_type == 1) {
-                                   	var title_type = $('#title1').val();
-                                   	var place_type = $('#place1').val();
-                                   	var remark_type = $('#remark1').val();
-
-
-
-
-                               	   }
-                               	   else
-                               	   {
-                               	   	var title_type = $('#title').val();
-                                   	var place_type = $('#place').val();
-                                   	var remark_type = $('#remark').val();
-                               	   }*/
         var title_type = $form.find('input[name=title]').val();
         var place_type = $form.find('input[name=place]').val();
         var remark_type = $form.find('input[name=remark]').val();
@@ -407,82 +364,55 @@ $(function($)
     	var s_id = $form.find('input[name=id]').val();
 
 		var post_vars = {
-                                   title:       title_type,
-                                   place:       place_type,
-                                   remark:      remark_type,
-								   s_year:      regi_year,
-                                   s_month:     regi_month,
-                                   s_day:       regi_day,
-                                   s_sche_time: $form.find('input[name=s_sche_time]').val(),
-                                   f_year:      $form.find('input[name=f_year]').val(),
-                                   f_month:     $form.find('input[name=f_month]').val(),
-                                   f_day:       $form.find('input[name=f_day]').val(),
-                                   f_sche_time: $form.find('input[name=f_sche_time]').val(),
-                                   id:          s_id,
-                                   result: result_type, 
-                                   csrf_token: '<?php echo "$token";?>',
-                        };
-       /*if() {
-       		post_vars.id = $("").val();
-       }*/
-
+			title:       title_type,
+			place:       place_type,
+			remark:      remark_type,
+			s_year:      regi_year,
+			s_month:     regi_month,
+			s_day:       regi_day,
+			s_sche_time: $form.find('input[name=s_sche_time]').val(),
+			f_year:      $form.find('input[name=f_year]').val(),
+			f_month:     $form.find('input[name=f_month]').val(),
+			f_day:       $form.find('input[name=f_day]').val(),
+			f_sche_time: $form.find('input[name=f_sche_time]').val(),
+			id:          s_id,
+			result: result_type, 
+			csrf_token: '<?php echo "$token";?>',
+        };
+       
 		$.ajax({
                     type     : 'POST',
                     dataType : 'text',
                     url      : 'result.php',
                     data     : post_vars
-                }).done(function(data) {
-                    // ajax ok
-                    //$("#disp_area").html(data);
+        }).done(function(data) {
 
+	        //新規作成だったら
+	        //ajaxでid取得→var idに代入
+	        if (result_type == 1) 
+	        {
+	        s_id = Number($(data).text());
+	        };
 
-                    //新規作成だったら
-                    //ajaxでid取得→var idに代入
-                    if (result_type == 1) 
-                    {
-                    s_id = Number($(data).text());
-                    };
-
-
-                	if (result_type != 3) 
-                	{
-	                    var search_id = "." + (regi_year * 10000 + regi_month * 100 + regi_day * 1);
-					    //var a_tag = $('<a></a>').attr("href", 'http://kensyu.aucfan.com/schedule.php?year=' + regi_year + '&month=' + regi_month + '&day=' + regi_day + '&id=' + id);
-					    //$(search_id).append('<div></div>').append(a_tag);
+	    	if (result_type != 3) 
+	    	{
+	            var search_id = "." + (regi_year * 10000 + regi_month * 100 + regi_day * 1);
 					    var url = 'http://kensyu.aucfan.com/schedule.php?year=' + regi_year + '&month=' + regi_month + '&day=' + regi_day + '&id=' + s_id ;
-					    $(search_id).append("<div style='font-size: 8px'><a href=" + url + " class=\"schedule\">" + title_type + "</a></div>");
-    				};
+			    $(search_id).append("<div style='font-size: 8px'><a href=" + url + " class=\"schedule\">" + title_type + "</a></div>");
+			};
 
-    				if (result_type != 1) 
-    				{
-    				ac_sche.remove();
-    				};
+			if (result_type != 1) 
+			{
+			ac_sche.remove();
+			};
 
-                    $("#inputform").removeClass("active");
-                }).fail(function(data) {
-                    // ajax error
-                    $("#disp_area").html('Error');
-                }).always(function(data) {
-                    // ajax complete
-                });
-
-
-
-
-
-   /* $.ajax({
-        url: 'calendar.php',
-        type:'post'
-    }).then(function(data,status){
-        // 成功時
-        console.log(status);
-        $('body').append(data);
-    },function(data,status){
-        // 失敗時
-        console.log(status);
-    });*/
-
-    
+	        $("#inputform").removeClass("active");
+        }).fail(function(data) {
+            // ajax error
+            $("#disp_area").html('Error');
+        }).always(function(data) {
+            // ajax complete
+        });
 
 
 	    //URL先に飛ばない
@@ -490,17 +420,11 @@ $(function($)
 
 	});
 
-
-
-
-
-
-
-
 });
 
 
 </script>
+
 
 <div class="inputform" id="inputform">
 	    

@@ -1,13 +1,7 @@
 <?php
 require_once dirname(__FILE__). '/calendar.php';
 
-
-
-
 session_start();
-
-//echo "セッションデータ：" , $_SESSION["sdata"];
-//echo "ポストデータ：" , $_POST["csrf_token"];
 
 if ($_POST["csrf_token"] == $_SESSION["sdata"] ) 
 {
@@ -66,9 +60,6 @@ echo"不正なセッションです";
 
 }
 
-
-//自動で戻る
-//header("Location: ./index.php");
 
 ?>
 
