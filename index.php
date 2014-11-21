@@ -81,8 +81,6 @@ $token = $tok->get_csrf_token();
 //セッションでトークンの値を送信
 $_SESSION["sdata"] = $token;
 
-//echo $token;
-
 
 ?>
 
@@ -230,7 +228,7 @@ $_SESSION["sdata"] = $token;
 					<td class="<?php echo $cal->addcolor($value['time'], $value['year'], $value['month'], $c, $holiday) ?> <?php echo($cal->date_id($value['year'], $value['month'], $c)) ?>" align="left" valign="top">
 						<?php if($c > 0 && $c <= $cal->lastday($value['time'])) : ?>
 							<div>
-								<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c) ?>" class="schedule">
+								<a href="<?php echo htmlspecialchars('http://192.168.101.217/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c) ?>" class="schedule">
 									<?php echo $c ?>
 								</a>
 					 		</div>
@@ -250,7 +248,7 @@ $_SESSION["sdata"] = $token;
 	                        <?php if (! empty($schedule[date(Ymd, mktime(0,0,0,$value['month'],$c,$value['year']))])) foreach ($schedule[date(Ymd, mktime(0,0,0,$value['month'],$c,$value['year']))] as $schedule_array) : ?>
 	                        	<?php if (!isset($schedule_array['deleted_at'])) : ?>
 		                        	<div style="font-size: 8px">
-			                        	<a href="<?php echo htmlspecialchars('http://kensyu.aucfan.com/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c . '&id=' .  $schedule_array['schedule_id'] ) ?>" class="schedule">
+			                        	<a href="<?php echo htmlspecialchars('http://192.168.101.217/schedule.php?year=' . $value['year'] . '&month=' . $value['month'] . '&day=' . $c . '&id=' .  $schedule_array['schedule_id'] ) ?>" class="schedule">
 							 				<?php echo htmlspecialchars($schedule_array['title'])?>
 						 				</a>
 							 		</div>
@@ -397,7 +395,7 @@ $(function($)
 	    	if (result_type != 3) 
 	    	{
 	            var search_id = "." + (regi_year * 10000 + regi_month * 100 + regi_day * 1);
-					    var url = 'http://kensyu.aucfan.com/schedule.php?year=' + regi_year + '&month=' + regi_month + '&day=' + regi_day + '&id=' + s_id ;
+					    var url = 'http://192.168.101.217/schedule.php?year=' + regi_year + '&month=' + regi_month + '&day=' + regi_day + '&id=' + s_id ;
 			    $(search_id).append("<div style='font-size: 8px'><a href=" + url + " class=\"schedule\">" + title_type + "</a></div>");
 			};
 
