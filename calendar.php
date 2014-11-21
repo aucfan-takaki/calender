@@ -183,9 +183,13 @@ class Calendar
       */
      public function getHolidays($start, $finish) 
      {
+          /*
           $holidays = array();
-      
+
           //Googleカレンダーから、指定年の祝日情報をJSON形式で取得するためのURL
+      
+          //↓2014/11/17にサービス終了
+          //ソース：http://kijtra.com/article/get-japanese-holiday-from-google/
           $url = sprintf
           (
                'http://www.google.com/calendar/feeds/%s/public/full?alt=json&%s&%s',
@@ -211,7 +215,33 @@ class Calendar
       
           //配列として祝日を返す
           return $holidays;
-     }
+          */
+
+          
+           $calendar_id = urlencode('japanese__ja@holiday.calendar.google.com');
+
+            
+           $url = "https://www.google.com/calendar/feeds/{$calendar_id}/public/basic?start-min={$start}&start-max={$finish}&max-results=30&alt=json";
+
+           $ch = curl_init();
+           curl_setopt($ch, CURLOPT_URL, $url);
+           curl_setopt($ch, CURLOPT_RETURNTRANSFER, true) ;
+           $result = curl_exec($ch);
+           curl_close($ch);
+
+           if (!empty($result)) {
+               $json = json_decode($result, true);
+               if (!empty($json['feed']['entry'])) {
+                   $datas = array();
+                   foreach ($json['feed']['entry'] as $val) {
+                       $date = preg_replace('#\A.*?(2\d{7})[^/]*\z#i', '$1', $val['id']['$t']);
+                       $datas[$date] = $val['title']['$t'];                        
+                   }
+                   ksort($datas);
+                   return $datas;
+               }
+           }
+       }
 
      /**
       *祝日の場合、その日の値を「date("Ymd"）」で出力する
